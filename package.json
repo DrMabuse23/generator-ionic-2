@@ -1,5 +1,5 @@
 {
-  "name": "generator-ionic2",
+  "name": "generator-ionic-2",
   "version": "0.0.1-alpha",
   "description": "a Generator to generate a mobile Hybrid Application with Ionic 2",
   "homepage": "",
@@ -31,7 +31,7 @@
     "gulp-nsp": "^2.1.0",
     "gulp-coveralls": "^0.1.0"
   },
-  "repository": "https://github.com/DrMabuse23/generator-ionic2.git",
+  "repository": "https://github.com/DrMabuse23/generator-ionic-2.git",
   "scripts": {
     "prepublish": "gulp prepublish",
     "test": "gulp"
