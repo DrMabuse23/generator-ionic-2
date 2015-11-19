@@ -4,7 +4,10 @@
 ## Installation
 
 First, install [Yeoman](http://yeoman.io) and generator-ionic2 using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
-![yo](http://yeoman.io/static/mustache.d62b915ab6.svg)
+
+------------ | -------------
+![yo](http://yeoman.io/static/mustache.d62b915ab6.svg) | ''
+
 ```bash
 npm install -g yo
 npm install -g generator-ionic2
