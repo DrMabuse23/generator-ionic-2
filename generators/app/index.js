@@ -1,40 +1,49 @@
 'use strict';
-var yeoman = require('yeoman-generator');
-var chalk = require('chalk');
-var yosay = require('yosay');
 
-module.exports = yeoman.generators.Base.extend({
-  prompting: function () {
-    var done = this.async();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-    // Have Yeoman greet the user.
-    this.log(yosay(
-      'Welcome to the extraordinary ' + chalk.red('generator-m-ionic-2') + ' generator!'
-    ));
-
-    var prompts = [{
-      type: 'confirm',
-      name: 'someOption',
-      message: 'Would you like to enable this option?',
-      default: true
-    }];
-
-    this.prompt(prompts, function (props) {
-      this.props = props;
-      // To access props later use this.props.someOption;
-
-      done();
-    }.bind(this));
-  },
-
-  writing: function () {
-    this.fs.copy(
-      this.templatePath('dummyfile.txt'),
-      this.destinationPath('dummyfile.txt')
-    );
-  },
-
-  install: function () {
-    this.installDependencies();
-  }
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
+
+var _yeomanGenerator = require('yeoman-generator');
+
+var _yeomanWelcome = require('yeoman-welcome');
+
+var _yeomanWelcome2 = _interopRequireDefault(_yeomanWelcome);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Base Generator class
+ */
+
+var Ionic2 = (function (_Base) {
+  _inherits(Ionic2, _Base);
+
+  function Ionic2() {
+    _classCallCheck(this, Ionic2);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Ionic2).apply(this, arguments));
+
+    _this.argument('appname');
+    return _this;
+  }
+
+  _createClass(Ionic2, [{
+    key: 'method1',
+    value: function method1() {
+      console.log('The name is: ' + this.appname);
+    }
+  }]);
+
+  return Ionic2;
+})(_yeomanGenerator.Base);
+
+exports.default = Ionic2;
