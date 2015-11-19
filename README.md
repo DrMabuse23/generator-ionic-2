@@ -1,10 +1,11 @@
 # generator-ionic-2 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
-> 
+
+a Generator to generate a mobile Hybrid Application with Ionic 2
 
 ## Installation
 
 First, install [Yeoman](http://yeoman.io) and generator-ionic-2 using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
-
+![yo](http://yeoman.io/static/mustache.d62b915ab6.svg)
 ```bash
 npm install -g yo
 npm install -g generator-ionic-2
@@ -33,3 +34,4 @@ MIT © [DrMabuse](pascal-brewing.de)
 [daviddm-url]: https://david-dm.org/DrMabuse23/generator-ionic-2
 [coveralls-image]: https://coveralls.io/repos/DrMabuse23/generator-ionic-2/badge.svg
 [coveralls-url]: https://coveralls.io/r/DrMabuse23/generator-ionic-2
+# generator-ionic-2
