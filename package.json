@@ -34,7 +34,8 @@
   "repository": "https://github.com/DrMabuse23/generator-ionic-2.git",
   "scripts": {
     "prepublish": "gulp prepublish",
-    "test": "gulp"
+    "test": "gulp",
+    "watch": "babel core -d generators -w"
   },
   "license": "MIT"
 }

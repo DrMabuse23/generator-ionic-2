@@ -1,16 +1,30 @@
 import { Base } from 'yeoman-generator';
 import welcome from 'yeoman-welcome';
+
 /**
  * Base Generator class
  */
 export default class Ionic2 extends Base {
+  get prompting() {
+    return {
+      appName() {
+        let done = this.async();
+        let prompt = [
+          {
+            type: 'input',
+            name: 'appName',
+            message: 'Enter a name for your app:',
+          },
+        ];
 
-  constructor( ...args ) {
-    super(...args);
-    this.argument('appname');
+        this.prompt(prompt, ({ appName }) => {
+          this.options.appName = appName;
+          done();
+        });
+      },
+    };
   }
-
   method1() {
-    console.log(`The name is: ${ this.appname }`);
+    console.log(welcome);
   }
 }

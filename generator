@@ -30,36 +30,19 @@ var Ionic2 = (function (_Base) {
   function Ionic2() {
     _classCallCheck(this, Ionic2);
 
-    _get(Object.getPrototypeOf(Ionic2.prototype), 'constructor', this).apply(this, arguments);
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _get(Object.getPrototypeOf(Ionic2.prototype), 'constructor', this).apply(this, args);
+    this.argument('appname');
   }
 
   _createClass(Ionic2, [{
     key: 'method1',
     value: function method1() {
-      console.log(_yeomanWelcome2['default']);
-    }
-  }, {
-    key: 'prompting',
-    get: function get() {
-      return {
-        appName: function appName() {
-          var _this = this;
 
-          var done = this.async();
-          var prompt = [{
-            type: 'input',
-            name: 'appName',
-            message: 'Enter a name for your app:'
-          }];
-
-          this.prompt(prompt, function (_ref) {
-            var appName = _ref.appName;
-
-            _this.options.appName = appName;
-            done();
-          });
-        }
-      };
+      console.log('The name is: ' + this.appname);
     }
   }]);
 
