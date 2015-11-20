@@ -4,6 +4,7 @@
         "module": "commonjs"
     },
     "filesGlob": [
-        "./core/**/*.es6"
+        "./core/**/*.es6",
+        "./utils/**/*.es6"
     ]
 }

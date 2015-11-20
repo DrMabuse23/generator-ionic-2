@@ -6,7 +6,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x4, _x5, _x6) { var _again = true; _function: while (_again) { var object = _x4, property = _x5, receiver = _x6; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x4 = parent; _x5 = property; _x6 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -20,51 +20,116 @@ var _yeomanWelcome = require('yeoman-welcome');
 
 var _yeomanWelcome2 = _interopRequireDefault(_yeomanWelcome);
 
+var _chalk = require('chalk');
+
+var _chalk2 = _interopRequireDefault(_chalk);
+
+var _utilsValidate = require('./../utils/Validate');
+
+var _utilsValidate2 = _interopRequireDefault(_utilsValidate);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 /**
  * Base Generator class
  */
 
-var Ionic2 = (function (_Base) {
-  _inherits(Ionic2, _Base);
+var GeneratorIonic2 = (function (_Base) {
+  _inherits(GeneratorIonic2, _Base);
 
-  function Ionic2() {
-    _classCallCheck(this, Ionic2);
+  function GeneratorIonic2() {
+    _classCallCheck(this, GeneratorIonic2);
 
-    _get(Object.getPrototypeOf(Ionic2.prototype), 'constructor', this).apply(this, arguments);
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _get(Object.getPrototypeOf(GeneratorIonic2.prototype), 'constructor', this).apply(this, args);
+    this.pkg = require(this.sourceRoot() + '/../../../package.json');
+    this.options = {
+      name: 'test-app',
+      id: 'com.ionic2.gen.nice',
+      version: '0.0.1',
+      description: 'My Ionic 2 App',
+      email: 'example@example.com',
+      url: 'https://github.com/DrMabuse23/generator-ionic-2',
+      author: 'DrMabuse'
+    };
+
+    this.genPrompts = [];
   }
 
-  _createClass(Ionic2, [{
-    key: 'method1',
-    value: function method1() {
-      console.log(_yeomanWelcome2['default']);
+  _createClass(GeneratorIonic2, [{
+    key: 'init',
+    value: function init() {
+      this.getStartPrompts();
+      this.log(_yeomanWelcome2['default']);
+      this.log('Welcome to ' + _chalk2['default'].yellow.bold(this.pkg.name) + '! v. ' + _chalk2['default'].red(this.pkg.version));
     }
   }, {
     key: 'prompting',
-    get: function get() {
-      return {
-        appName: function appName() {
-          var _this = this;
+    value: function prompting() {
+      var _this = this;
 
-          var done = this.async();
-          var prompt = [{
-            type: 'input',
-            name: 'appName',
-            message: 'Enter a name for your app:'
-          }];
+      var done = this.async();
+      this.prompt(this.genPrompts, function (answers) {
+        ['config.xml', 'package.json'].forEach(function (file) {
+          _this.createTemplate(file, answers);
+        });
 
-          this.prompt(prompt, function (_ref) {
-            var appName = _ref.appName;
+        ['.gitignore', 'app', 'tsconfig.json', 'webpack.config.js'].forEach(function (file) {
+          _this._copy(file);
+        });
+        done();
+      });
+    }
+  }, {
+    key: 'getStartPrompts',
+    value: function getStartPrompts() {
+      var _this2 = this;
 
-            _this.options.appName = appName;
-            done();
-          });
+      var keys = Object.keys(this.options);
+      keys.forEach(function (option, key) {
+        _this2.genPrompts.push({
+          type: 'input',
+          name: option,
+          message: 'Enter a ' + option + ' for your app:',
+          'default': _this2.options[option]
+        });
+        if (typeof _utilsValidate2['default'][option] === 'function') {
+          _this2.genPrompts[key].validate = _utilsValidate2['default'][option];
         }
-      };
+      });
+    }
+  }, {
+    key: '_copy',
+    value: function _copy() {
+      var file = arguments.length <= 0 || arguments[0] === undefined ? undefined : arguments[0];
+
+      if (!file) {
+        return false;
+      }
+      this.fs.copy(this.templatePath('_' + file), this.destinationPath(file), function (err) {
+        throw Error(err);
+      });
+    }
+  }, {
+    key: 'createTemplate',
+    value: function createTemplate() {
+      var file = arguments.length <= 0 || arguments[0] === undefined ? undefined : arguments[0];
+      var options = arguments.length <= 1 || arguments[1] === undefined ? undefined : arguments[1];
+
+      if (!file) {
+        return false;
+      }
+      this.fs.copyTpl(this.templatePath('_' + file), this.destinationPath(file), options);
     }
   }]);
 
-  return Ionic2;
+  return GeneratorIonic2;
 })(_yeomanGenerator.Base);
 
-exports['default'] = Ionic2;
+exports['default'] = GeneratorIonic2;
 module.exports = exports['default'];
