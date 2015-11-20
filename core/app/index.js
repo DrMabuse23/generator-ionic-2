@@ -92,11 +92,12 @@ export default class GeneratorIonic2 extends Base {
   }
   
   nodeInstall() {
-    this.log('♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ Start nmp i');
+    
     return new Promise((resolve, reject) => {
       let i = 0;
+      this.log('☕  ☕  Start  ☕  npm install  ☕');
       let interval = setInterval(() => {
-        this.log(`♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ${i+5} sec`);
+        this.log(`☕  ☕  ☕  ☕  ☕  ${i + 5} sec ☕  ☕  ☕  ☕  ☕`);
         i += 5;
       }, 5000);
       let process = this.spawnCommand('npm', ['install']);

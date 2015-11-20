@@ -139,11 +139,11 @@ var GeneratorIonic2 = (function (_Base) {
     value: function nodeInstall() {
       var _this3 = this;
 
-      this.log('♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ Start nmp i');
       return new Promise(function (resolve, reject) {
         var i = 0;
+        _this3.log('☕  ☕  Start  ☕  npm install  ☕');
         var interval = setInterval(function () {
-          _this3.log('♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ' + (i + 5) + ' sec');
+          _this3.log('☕  ☕  ☕  ☕  ☕  ' + (i + 5) + ' sec ☕  ☕  ☕  ☕  ☕');
           i += 5;
         }, 5000);
         var process = _this3.spawnCommand('npm', ['install']);
