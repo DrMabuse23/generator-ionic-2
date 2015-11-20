@@ -24,17 +24,18 @@ var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
-var _utilsValidate = require('./../utils/Validate');
-
-var _utilsValidate2 = _interopRequireDefault(_utilsValidate);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _utilsValidate = require('./../utils/Validate');
+
+var _utilsValidate2 = _interopRequireDefault(_utilsValidate);
+
 /**
  * Base Generator class
  */
+require("babel-polyfill");
 
 var GeneratorIonic2 = (function (_Base) {
   _inherits(GeneratorIonic2, _Base);
@@ -47,6 +48,7 @@ var GeneratorIonic2 = (function (_Base) {
     }
 
     _get(Object.getPrototypeOf(GeneratorIonic2.prototype), 'constructor', this).apply(this, args);
+
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
     this.options = {
       name: 'test-app',
@@ -78,11 +80,17 @@ var GeneratorIonic2 = (function (_Base) {
         ['config.xml', 'package.json'].forEach(function (file) {
           _this.createTemplate(file, answers);
         });
-
+        var all = [];
         ['.gitignore', 'app', 'tsconfig.json', 'webpack.config.js'].forEach(function (file) {
-          _this._copy(file);
+          all.push(_this._copy(file));
         });
         done();
+
+        Promise.all(all).then(function () {
+          _this.nodeInstall().then(function (code) {
+            console.log('npm install done', code);
+          });
+        });
       });
     }
   }, {
@@ -111,7 +119,7 @@ var GeneratorIonic2 = (function (_Base) {
       if (!file) {
         return false;
       }
-      this.fs.copy(this.templatePath('_' + file), this.destinationPath(file), function (err) {
+      return this.fs.copy(this.templatePath('_' + file), this.destinationPath(file), function (err) {
         throw Error(err);
       });
     }
@@ -124,7 +132,26 @@ var GeneratorIonic2 = (function (_Base) {
       if (!file) {
         return false;
       }
-      this.fs.copyTpl(this.templatePath('_' + file), this.destinationPath(file), options);
+      return this.fs.copyTpl(this.templatePath('_' + file), this.destinationPath(file), options);
+    }
+  }, {
+    key: 'nodeInstall',
+    value: function nodeInstall() {
+      var _this3 = this;
+
+      this.log('♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ Start nmp i');
+      return new Promise(function (resolve, reject) {
+        var i = 0;
+        var interval = setInterval(function () {
+          _this3.log('♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ' + (i + 5) + ' sec');
+          i += 5;
+        }, 5000);
+        var process = _this3.spawnCommand('npm', ['install']);
+        process.on('close', function (code, signal) {
+          clearInterval(interval);
+          resolve(code);
+        });
+      });
     }
   }]);
 

@@ -1,8 +1,11 @@
+require("babel-polyfill");
 import { Base } from 'yeoman-generator';
 import welcome from 'yeoman-welcome';
 import chalk from 'chalk';
-import Validate from './../utils/Validate';
 import _ from 'lodash';
+
+import Validate from './../utils/Validate';
+
 /**
  * Base Generator class
  */
@@ -10,6 +13,7 @@ export default class GeneratorIonic2 extends Base {
   
   constructor(...args){
     super(...args);
+    
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
     this.options = {
       name: 'test-app',
@@ -36,11 +40,17 @@ export default class GeneratorIonic2 extends Base {
       ['config.xml', 'package.json'].forEach((file) => {
         this.createTemplate(file, answers);  
       });
-      
+      var all = [];
       ['.gitignore', 'app', 'tsconfig.json', 'webpack.config.js'].forEach((file) => {
-        this._copy(file);  
+        all.push(this._copy(file));  
       });
       done();
+      
+      Promise.all(all).then(() => {
+        this.nodeInstall().then((code) => {
+          console.log('npm install done', code);
+        });
+      });
     });
   }
   
@@ -64,7 +74,7 @@ export default class GeneratorIonic2 extends Base {
     if (!file) {
       return false;
     }
-    this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) => {
+    return this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) => {
       throw Error(err);
     });
   }
@@ -74,10 +84,26 @@ export default class GeneratorIonic2 extends Base {
     if (!file){
       return false;
     }
-    this.fs.copyTpl(
+    return this.fs.copyTpl(
       this.templatePath(`_${file}`),
       this.destinationPath(file),
       options
     );
+  }
+  
+  nodeInstall() {
+    this.log('♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ Start nmp i');
+    return new Promise((resolve, reject) => {
+      let i = 0;
+      let interval = setInterval(() => {
+        this.log(`♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ♨ ${i+5} sec`);
+        i += 5;
+      }, 5000);
+      let process = this.spawnCommand('npm', ['install']);
+      process.on('close', (code, signal) => {
+        clearInterval(interval);
+        resolve(code);
+      });
+    });
   }
 }
