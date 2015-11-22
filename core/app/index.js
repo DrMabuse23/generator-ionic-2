@@ -1,9 +1,10 @@
 require("babel-polyfill");
+import os from 'os';
 import { Base } from 'yeoman-generator';
 import welcome from 'yeoman-welcome';
 import chalk from 'chalk';
 import _ from 'lodash';
-
+import cordova from 'cordova-lib';
 import Validate from './../utils/Validate';
 
 /**
@@ -18,42 +19,60 @@ export default class GeneratorIonic2 extends Base {
     this.options = {
       name: 'test-app',
       id: 'com.ionic2.gen.nice',
-      version: '0.0.1',
+      version: '0.1.1',
       description: 'My Ionic 2 App',
       email: 'example@example.com',
       url: 'https://github.com/DrMabuse23/generator-ionic-2',
       author: 'DrMabuse'
     };
-    
+    this.answers = null;
+    this.platforms = [
+      'ios',
+      'android'
+    ];
+    if (os.platform !== 'darwin') {
+      this.platforms.push('windows');
+    }
     this.genPrompts = [];
+    
+    
   }
   
   init(){
     this.getStartPrompts()
     this.log(welcome);
     this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name)}! v. ${chalk.red(this.pkg.version)}`);
+    
   }
   
-  prompting() {
+  writing(){
     let done = this.async();
-    this.prompt(this.genPrompts, (answers) => {
-      ['config.xml', 'package.json'].forEach((file) => {
-        this.createTemplate(file, answers);  
+    console.log('writing ?', cordova.cordova.create);
+    cordova.cordova.create('.', this.answers.id, this.answers.name, this.answers.name, (err, res) => {
+      ['package.json'].forEach((file) => {
+        this.createTemplate(file, this.answers);  
+      });
+      this.answers.platforms.forEach((platform) => {
+        cordova.cordova.platform('add', platform, {save: true});
       });
       var all = [];
       ['.gitignore', 'app', 'tsconfig.json', 'webpack.config.js'].forEach((file) => {
         all.push(this._copy(file));  
       });
-      done();
-      
       Promise.all(all).then(() => {
-        this.nodeInstall().then((code) => {
-          console.log('npm install done', code);
-        });
+        console.log('templates are written');
+        done();
       });
     });
   }
   
+  prompting() {
+    let done = this.async();
+    this.prompt(this.genPrompts, (answers) => {
+      this.answers = answers;
+      done();
+    });
+  }
   getStartPrompts() {
     var keys = Object.keys(this.options);
     keys.forEach((option, key) => {
@@ -67,6 +86,12 @@ export default class GeneratorIonic2 extends Base {
       if (typeof Validate[option] === 'function') {
         this.genPrompts[key].validate = Validate[option];
       }
+    });
+    this.genPrompts.push({
+      type: 'checkbox',
+      name: 'platforms',
+      message: 'Please choose a Platform',
+      choices: this.platforms
     });
   }
   
@@ -91,8 +116,7 @@ export default class GeneratorIonic2 extends Base {
     );
   }
   
-  nodeInstall() {
-    
+  install() {
     return new Promise((resolve, reject) => {
       let i = 0;
       this.log('☕  ☕  Start  ☕  npm install  ☕');

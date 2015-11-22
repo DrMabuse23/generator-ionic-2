@@ -14,6 +14,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var _os = require('os');
+
+var _os2 = _interopRequireDefault(_os);
+
 var _yeomanGenerator = require('yeoman-generator');
 
 var _yeomanWelcome = require('yeoman-welcome');
@@ -27,6 +31,10 @@ var _chalk2 = _interopRequireDefault(_chalk);
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
+
+var _cordovaLib = require('cordova-lib');
+
+var _cordovaLib2 = _interopRequireDefault(_cordovaLib);
 
 var _utilsValidate = require('./../utils/Validate');
 
@@ -53,13 +61,17 @@ var GeneratorIonic2 = (function (_Base) {
     this.options = {
       name: 'test-app',
       id: 'com.ionic2.gen.nice',
-      version: '0.0.1',
+      version: '0.1.1',
       description: 'My Ionic 2 App',
       email: 'example@example.com',
       url: 'https://github.com/DrMabuse23/generator-ionic-2',
       author: 'DrMabuse'
     };
-
+    this.answers = null;
+    this.platforms = ['ios', 'android'];
+    if (_os2['default'].platform !== 'darwin') {
+      this.platforms.push('windows');
+    }
     this.genPrompts = [];
   }
 
@@ -71,44 +83,62 @@ var GeneratorIonic2 = (function (_Base) {
       this.log('Welcome to ' + _chalk2['default'].yellow.bold(this.pkg.name) + '! v. ' + _chalk2['default'].red(this.pkg.version));
     }
   }, {
-    key: 'prompting',
-    value: function prompting() {
+    key: 'writing',
+    value: function writing() {
       var _this = this;
 
       var done = this.async();
-      this.prompt(this.genPrompts, function (answers) {
-        ['config.xml', 'package.json'].forEach(function (file) {
-          _this.createTemplate(file, answers);
+      console.log('writing ?', _cordovaLib2['default'].cordova.create);
+      _cordovaLib2['default'].cordova.create('.', this.answers.id, this.answers.name, this.answers.name, function (err, res) {
+        ['package.json'].forEach(function (file) {
+          _this.createTemplate(file, _this.answers);
+        });
+        _this.answers.platforms.forEach(function (platform) {
+          _cordovaLib2['default'].cordova.platform('add', platform, { save: true });
         });
         var all = [];
         ['.gitignore', 'app', 'tsconfig.json', 'webpack.config.js'].forEach(function (file) {
           all.push(_this._copy(file));
         });
-        done();
-
         Promise.all(all).then(function () {
-          _this.nodeInstall().then(function (code) {
-            console.log('npm install done', code);
-          });
+          console.log('templates are written');
+          done();
         });
+      });
+    }
+  }, {
+    key: 'prompting',
+    value: function prompting() {
+      var _this2 = this;
+
+      var done = this.async();
+      this.prompt(this.genPrompts, function (answers) {
+        _this2.answers = answers;
+        done();
       });
     }
   }, {
     key: 'getStartPrompts',
     value: function getStartPrompts() {
-      var _this2 = this;
+      var _this3 = this;
 
       var keys = Object.keys(this.options);
       keys.forEach(function (option, key) {
-        _this2.genPrompts.push({
+        _this3.genPrompts.push({
           type: 'input',
           name: option,
           message: 'Enter a ' + option + ' for your app:',
-          'default': _this2.options[option]
+          'default': _this3.options[option]
         });
         if (typeof _utilsValidate2['default'][option] === 'function') {
-          _this2.genPrompts[key].validate = _utilsValidate2['default'][option];
+          _this3.genPrompts[key].validate = _utilsValidate2['default'][option];
         }
+      });
+      this.genPrompts.push({
+        type: 'checkbox',
+        name: 'platforms',
+        message: 'Please choose a Platform',
+        choices: this.platforms
       });
     }
   }, {
@@ -135,18 +165,18 @@ var GeneratorIonic2 = (function (_Base) {
       return this.fs.copyTpl(this.templatePath('_' + file), this.destinationPath(file), options);
     }
   }, {
-    key: 'nodeInstall',
-    value: function nodeInstall() {
-      var _this3 = this;
+    key: 'install',
+    value: function install() {
+      var _this4 = this;
 
       return new Promise(function (resolve, reject) {
         var i = 0;
-        _this3.log('☕  ☕  Start  ☕  npm install  ☕');
+        _this4.log('☕  ☕  Start  ☕  npm install  ☕');
         var interval = setInterval(function () {
-          _this3.log('☕  ☕  ☕  ☕  ☕  ' + (i + 5) + ' sec ☕  ☕  ☕  ☕  ☕');
+          _this4.log('☕  ☕  ☕  ☕  ☕  ' + (i + 5) + ' sec ☕  ☕  ☕  ☕  ☕');
           i += 5;
         }, 5000);
-        var process = _this3.spawnCommand('npm', ['install']);
+        var process = _this4.spawnCommand('npm', ['install']);
         process.on('close', function (code, signal) {
           clearInterval(interval);
           resolve(code);
