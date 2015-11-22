@@ -5,18 +5,27 @@ a Generator to generate a mobile Hybrid Application with Ionic 2
 ## Installation
 
 First, install [Yeoman](http://yeoman.io) and generator-ionic-2 using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
-![yo](http://yeoman.io/static/mustache.d62b915ab6.svg)
+![yo](http://yeoman.io/static/yeoman-005.caffeeaba0.png)
+
 ```bash
 npm install -g yo
 npm install -g generator-ionic-2
+
 ```
 
 Then generate your new project:
 
 ```bash
-yo generator-ionic-2
+mkdir myProject && cd myProject
+yo ionic-2
+npm start
 ```
+open now ![http://localhost:3000](http://localhost:3000)
 
+//or prod
+```bash
+npm build
+```
 ## Getting To Know Yeoman
 
 Yeoman has a heart of gold. He&#39;s a person with feelings and opinions, but he&#39;s very easy to work with. If you think he&#39;s too opinionated, he can be easily convinced. Feel free to [learn more about him](http://yeoman.io/).
