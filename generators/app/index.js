@@ -56,16 +56,10 @@ var GeneratorIonic2 = (function (_Base) {
     }
 
     _get(Object.getPrototypeOf(GeneratorIonic2.prototype), 'constructor', this).apply(this, args);
-
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
     this.options = {
       name: 'test-app',
-      id: 'com.ionic2.gen.nice',
-      version: '0.1.1',
-      description: 'My Ionic 2 App',
-      email: 'example@example.com',
-      url: 'https://github.com/DrMabuse23/generator-ionic-2',
-      author: 'DrMabuse'
+      id: 'com.ionic2.gen.nice'
     };
     this.answers = null;
     this.platforms = ['ios', 'android'];
@@ -88,7 +82,6 @@ var GeneratorIonic2 = (function (_Base) {
       var _this = this;
 
       var done = this.async();
-      console.log('writing ?', _cordovaLib2['default'].cordova.create);
       _cordovaLib2['default'].cordova.create('.', this.answers.id, this.answers.name, this.answers.name, function (err, res) {
         ['package.json'].forEach(function (file) {
           _this.createTemplate(file, _this.answers);
@@ -123,6 +116,7 @@ var GeneratorIonic2 = (function (_Base) {
       var _this3 = this;
 
       var keys = Object.keys(this.options);
+
       keys.forEach(function (option, key) {
         _this3.genPrompts.push({
           type: 'input',
@@ -134,6 +128,7 @@ var GeneratorIonic2 = (function (_Base) {
           _this3.genPrompts[key].validate = _utilsValidate2['default'][option];
         }
       });
+
       this.genPrompts.push({
         type: 'checkbox',
         name: 'platforms',
@@ -171,14 +166,9 @@ var GeneratorIonic2 = (function (_Base) {
 
       return new Promise(function (resolve, reject) {
         var i = 0;
-        _this4.log('☕  ☕  Start  ☕  npm install  ☕');
-        var interval = setInterval(function () {
-          _this4.log('☕  ☕  ☕  ☕  ☕  ' + (i + 5) + ' sec ☕  ☕  ☕  ☕  ☕');
-          i += 5;
-        }, 5000);
+        _this4.log('☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕');
         var process = _this4.spawnCommand('npm', ['install']);
         process.on('close', function (code, signal) {
-          clearInterval(interval);
           resolve(code);
         });
       });

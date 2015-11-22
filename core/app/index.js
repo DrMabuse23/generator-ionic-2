@@ -14,16 +14,10 @@ export default class GeneratorIonic2 extends Base {
   
   constructor(...args){
     super(...args);
-    
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
     this.options = {
       name: 'test-app',
       id: 'com.ionic2.gen.nice',
-      version: '0.1.1',
-      description: 'My Ionic 2 App',
-      email: 'example@example.com',
-      url: 'https://github.com/DrMabuse23/generator-ionic-2',
-      author: 'DrMabuse'
     };
     this.answers = null;
     this.platforms = [
@@ -34,8 +28,6 @@ export default class GeneratorIonic2 extends Base {
       this.platforms.push('windows');
     }
     this.genPrompts = [];
-    
-    
   }
   
   init(){
@@ -47,7 +39,6 @@ export default class GeneratorIonic2 extends Base {
   
   writing(){
     let done = this.async();
-    console.log('writing ?', cordova.cordova.create);
     cordova.cordova.create('.', this.answers.id, this.answers.name, this.answers.name, (err, res) => {
       ['package.json'].forEach((file) => {
         this.createTemplate(file, this.answers);  
@@ -75,6 +66,7 @@ export default class GeneratorIonic2 extends Base {
   }
   getStartPrompts() {
     var keys = Object.keys(this.options);
+    
     keys.forEach((option, key) => {
       this.genPrompts.push(
       {
@@ -87,6 +79,7 @@ export default class GeneratorIonic2 extends Base {
         this.genPrompts[key].validate = Validate[option];
       }
     });
+    
     this.genPrompts.push({
       type: 'checkbox',
       name: 'platforms',
@@ -119,14 +112,9 @@ export default class GeneratorIonic2 extends Base {
   install() {
     return new Promise((resolve, reject) => {
       let i = 0;
-      this.log('☕  ☕  Start  ☕  npm install  ☕');
-      let interval = setInterval(() => {
-        this.log(`☕  ☕  ☕  ☕  ☕  ${i + 5} sec ☕  ☕  ☕  ☕  ☕`);
-        i += 5;
-      }, 5000);
+      this.log(`☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕`);
       let process = this.spawnCommand('npm', ['install']);
       process.on('close', (code, signal) => {
-        clearInterval(interval);
         resolve(code);
       });
     });
