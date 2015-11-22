@@ -10,10 +10,10 @@ module.exports = {
     path.join(__dirname, 'app', 'main', 'main.js')
   ],
   output: {
-    path: path.join(__dirname, 'app', 'js'),
+    path: path.join(__dirname, 'www', 'js'),
     filename: 'app.bundle.js',
-    publicPath: 'js/',
-    pathinfo: true // show module paths in the bundle, handy for debugging
+    publicPath: 'build/js/',
+    pathinfo: false // show module paths in the bundle, handy for debugging
   },
   module: {
     loaders: [
@@ -29,6 +29,7 @@ module.exports = {
         include: [path.join(__dirname, 'app')],
         exclude: /node_modules/
       },
+      { test: /\.jpe?g$|\.gif$|\.png$|\.html$/i, loader: "file-loader" },
       {
         // Loader to compile all of our SASS down.
         // Use the `resolve-url` pipe to convert the relative url paths to something this loader
