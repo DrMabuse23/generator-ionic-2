@@ -1,0 +1,123 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/node/5.0.0/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@3.3.9
+3 info using node@v5.0.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/pascalbrewing/web/generator-ionic-2',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/pascalbrewing/.npm/generator-ionic-2/0.0.1-alpha/package.tgz not in flight; packing
+9 info lifecycle generator-ionic-2@0.0.1-alpha~prepublish: generator-ionic-2@0.0.1-alpha
+10 verbose lifecycle generator-ionic-2@0.0.1-alpha~prepublish: unsafe-perm in lifecycle true
+11 verbose lifecycle generator-ionic-2@0.0.1-alpha~prepublish: PATH: /usr/local/lib/node_modules/npm/bin/node-gyp-bin:/Users/pascalbrewing/web/generator-ionic-2/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+12 verbose lifecycle generator-ionic-2@0.0.1-alpha~prepublish: CWD: /Users/pascalbrewing/web/generator-ionic-2
+13 silly lifecycle generator-ionic-2@0.0.1-alpha~prepublish: Args: [ '-c', 'gulp prepublish' ]
+14 silly lifecycle generator-ionic-2@0.0.1-alpha~prepublish: Returned: code: 0  signal: null
+15 verbose tar pack [ '/Users/pascalbrewing/.npm/generator-ionic-2/0.0.1-alpha/package.tgz',
+15 verbose tar pack   '/Users/pascalbrewing/web/generator-ionic-2' ]
+16 verbose tarball /Users/pascalbrewing/.npm/generator-ionic-2/0.0.1-alpha/package.tgz
+17 verbose folder /Users/pascalbrewing/web/generator-ionic-2
+18 verbose addLocalTarball adding from inside cache /Users/pascalbrewing/.npm/generator-ionic-2/0.0.1-alpha/package.tgz
+19 silly cache afterAdd generator-ionic-2@0.0.1-alpha
+20 verbose afterAdd /Users/pascalbrewing/.npm/generator-ionic-2/0.0.1-alpha/package/package.json not in flight; writing
+21 verbose afterAdd /Users/pascalbrewing/.npm/generator-ionic-2/0.0.1-alpha/package/package.json written
+22 silly publish { name: 'generator-ionic-2',
+22 silly publish   version: '0.0.1-alpha',
+22 silly publish   description: 'a Generator to generate a mobile Hybrid Application with Ionic 2',
+22 silly publish   homepage: 'https://github.com/DrMabuse23/generator-ionic-2#readme',
+22 silly publish   author:
+22 silly publish    { name: 'DrMabuse',
+22 silly publish      email: 'drmabuse@posteo.de',
+22 silly publish      url: 'pascal-brewing.de' },
+22 silly publish   files: [ 'generators' ],
+22 silly publish   main: 'generators/index.js',
+22 silly publish   keywords: [ 'yeoman-generator' ],
+22 silly publish   dependencies:
+22 silly publish    { 'yeoman-generator': '^0.21.1',
+22 silly publish      chalk: '^1.0.0',
+22 silly publish      yosay: '^1.0.2' },
+22 silly publish   devDependencies:
+22 silly publish    { 'babel-polyfill': '^6.2.0',
+22 silly publish      'cordova-lib': '^5.4.0',
+22 silly publish      gulp: '^3.6.0',
+22 silly publish      'gulp-coveralls': '^0.1.0',
+22 silly publish      'gulp-eslint': '^1.0.0',
+22 silly publish      'gulp-exclude-gitignore': '^1.0.0',
+22 silly publish      'gulp-istanbul': '^0.9.0',
+22 silly publish      'gulp-mocha': '^2.0.0',
+22 silly publish      'gulp-nsp': '^2.1.0',
+22 silly publish      'gulp-plumber': '^1.0.0',
+22 silly publish      'yeoman-assert': '^2.0.0' },
+22 silly publish   repository:
+22 silly publish    { type: 'git',
+22 silly publish      url: 'git+https://github.com/DrMabuse23/generator-ionic-2.git' },
+22 silly publish   scripts:
+22 silly publish    { prepublish: 'gulp prepublish',
+22 silly publish      test: 'gulp',
+22 silly publish      watch: 'babel core -d generators -w' },
+22 silly publish   license: 'MIT',
+22 silly publish   readme: '# generator-ionic-2 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]\n\na Generator to generate a mobile Hybrid Application with Ionic 2\n\n## Installation\n\nFirst, install [Yeoman](http://yeoman.io) and generator-ionic-2 using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).\n![yo](http://yeoman.io/static/mustache.d62b915ab6.svg)\n```bash\nnpm install -g yo\nnpm install -g generator-ionic-2\n```\n\nThen generate your new project:\n\n```bash\nyo generator-ionic-2\n```\n\n## Getting To Know Yeoman\n\nYeoman has a heart of gold. He&#39;s a person with feelings and opinions, but he&#39;s very easy to work with. If you think he&#39;s too opinionated, he can be easily convinced. Feel free to [learn more about him](http://yeoman.io/).\n\n## License\n\nMIT © [DrMabuse](pascal-brewing.de)\n\n\n[npm-image]: https://badge.fury.io/js/generator-ionic-2.svg\n[npm-url]: https://npmjs.org/package/generator-ionic-2\n[travis-image]: https://travis-ci.org/DrMabuse23/generator-ionic-2.svg?branch=master\n[travis-url]: https://travis-ci.org/DrMabuse23/generator-ionic-2\n[daviddm-image]: https://david-dm.org/DrMabuse23/generator-ionic-2.svg?theme=shields.io\n[daviddm-url]: https://david-dm.org/DrMabuse23/generator-ionic-2\n[coveralls-image]: https://coveralls.io/repos/DrMabuse23/generator-ionic-2/badge.svg\n[coveralls-url]: https://coveralls.io/r/DrMabuse23/generator-ionic-2\n# generator-ionic-2',
+22 silly publish   readmeFilename: 'README.md',
+22 silly publish   gitHead: 'fea69d25089870dfcdc6cffebc3d4186d97a11c8',
+22 silly publish   bugs: { url: 'https://github.com/DrMabuse23/generator-ionic-2/issues' },
+22 silly publish   _id: 'generator-ionic-2@0.0.1-alpha',
+22 silly publish   _shasum: '9a33704e237958ff7bf26e19a37dff825697dc2c',
+22 silly publish   _from: '.' }
+23 verbose getPublishConfig undefined
+24 silly mapToRegistry name generator-ionic-2
+25 silly mapToRegistry using default registry
+26 silly mapToRegistry registry https://registry.npmjs.org/
+27 silly mapToRegistry uri https://registry.npmjs.org/generator-ionic-2
+28 verbose publish registryBase https://registry.npmjs.org/
+29 silly publish uploading /Users/pascalbrewing/.npm/generator-ionic-2/0.0.1-alpha/package.tgz
+30 verbose request uri https://registry.npmjs.org/generator-ionic-2
+31 verbose request sending authorization for write operation
+32 info attempt registry request try #1 at 5:56:47 PM
+33 verbose request using bearer token for auth
+34 verbose request id 344685b6a7c5921a
+35 http request PUT https://registry.npmjs.org/generator-ionic-2
+36 http 403 https://registry.npmjs.org/generator-ionic-2
+37 verbose headers { 'content-type': 'application/json',
+37 verbose headers   'cache-control': 'max-age=60',
+37 verbose headers   'content-length': '101',
+37 verbose headers   'accept-ranges': 'bytes',
+37 verbose headers   date: 'Sun, 22 Nov 2015 16:57:08 GMT',
+37 verbose headers   via: '1.1 varnish',
+37 verbose headers   connection: 'keep-alive',
+37 verbose headers   'x-served-by': 'cache-fra1239-FRA',
+37 verbose headers   'x-cache': 'MISS',
+37 verbose headers   'x-cache-hits': '0',
+37 verbose headers   'x-timer': 'S1448211408.244840,VS0,VE20183' }
+38 verbose request invalidating /Users/pascalbrewing/.npm/registry.npmjs.org/generator-ionic-2 on PUT
+39 error publish Failed PUT 403
+40 verbose stack Error: "You cannot publish over the previously published version 0.0.1-alpha." : generator-ionic-2
+40 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+40 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+40 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+40 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:198:22)
+40 verbose stack     at emitTwo (events.js:87:13)
+40 verbose stack     at Request.emit (events.js:172:7)
+40 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1082:10)
+40 verbose stack     at emitOne (events.js:82:20)
+40 verbose stack     at Request.emit (events.js:169:7)
+40 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1009:12)
+41 verbose statusCode 403
+42 verbose pkgid generator-ionic-2
+43 verbose cwd /Users/pascalbrewing/web/generator-ionic-2
+44 error Darwin 15.0.0
+45 error argv "/usr/local/Cellar/node/5.0.0/bin/node" "/usr/local/bin/npm" "publish"
+46 error node v5.0.0
+47 error npm  v3.3.9
+48 error code E403
+49 error "You cannot publish over the previously published version 0.0.1-alpha." : generator-ionic-2
+50 error If you need help, you may report this error at:
+50 error     <https://github.com/npm/npm/issues>
+51 verbose exit [ 1, true ]

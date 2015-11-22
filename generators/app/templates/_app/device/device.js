@@ -1,7 +1,7 @@
-import {Page} from 'ionic/ionic';
-
+import {Page, Item, ItemGroup, ItemGroupTitle, ItemSliding, List, ListHeader} from 'ionic/ionic';
 @Page({
-  templateUrl: 'about/about.html'
+  directives: [Item, ItemGroup, ItemGroupTitle, ItemSliding, List, ListHeader],
+  templateUrl: 'device/device.html'
 })
 export class DevicePage {
   constructor() {

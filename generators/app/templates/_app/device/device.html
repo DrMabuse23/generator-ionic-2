@@ -1,4 +1,3 @@
-
 <ion-navbar *navbar>
   <ion-title>Device</ion-title>
 </ion-navbar>
@@ -12,7 +11,14 @@
   </div>
   <ion-list>
     <ion-item>
-      Platform: {{deviceInfo.platform}}
+     <span class="row">
+       <span class="col">
+         Platform:
+       </span>
+       <span class="col item-right">
+         {{deviceInfo.platform}}
+       </span>
+     </span>
     </ion-item>
   </ion-list>
 </ion-content>

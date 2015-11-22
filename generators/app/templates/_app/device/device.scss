@@ -1,0 +1,41 @@
+.device-header {
+  background-color: #444;
+  padding: 16px;
+  width: 100%;
+  text-align: center;
+}
+
+.device-header img {
+  max-width: 200px;
+  min-height: 115px;
+  margin-left: -15px;
+  padding: 25px 0 20px 0;
+}
+
+.device-info p {
+  color: #697072;
+}
+
+.device-info div {
+  padding: 5px;
+  text-align: left;
+  font-size: 1.5rem;
+}
+
+.device-info icon {
+  color: color(primary);
+  width: 20px;
+}
+
+.ios .device-info {
+  text-align: center;
+}
+
+.ios .device-info div {
+  display: inline-block;
+}
+
+.ios .device-info icon {
+  width: auto;
+  margin-right: 10px;
+}
