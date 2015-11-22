@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs"
+    },
+    "filesGlob": [
+        "./core/**/*.es6",
+        "./utils/**/*.es6"
+    ]
+}
