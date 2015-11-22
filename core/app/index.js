@@ -51,7 +51,7 @@ export default class GeneratorIonic2 extends Base {
         cordova.cordova.platform('add', platform, {save: true});
       });
       var all = [];
-      ['.gitignore', 'app', 'tsconfig.json', 'webpack.config.js'].forEach((file) => {
+      ['.gitignore', 'app', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
         all.push(this._copy(file));  
       });
       Promise.all(all).then(() => {
