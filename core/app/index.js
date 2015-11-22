@@ -18,6 +18,11 @@ export default class GeneratorIonic2 extends Base {
     this.options = {
       name: 'test-app',
       id: 'com.ionic2.gen.nice',
+      version: '0.0.1',
+      description: 'My Ionic 2 App',
+      email: 'example@example.com',
+      url: 'https://github.com/DrMabuse23/generator-ionic-2',
+      author: 'DrMabuse'
     };
     this.answers = null;
     this.platforms = [
@@ -34,7 +39,6 @@ export default class GeneratorIonic2 extends Base {
     this.getStartPrompts()
     this.log(welcome);
     this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name)}! v. ${chalk.red(this.pkg.version)}`);
-    
   }
   
   writing(){
@@ -98,7 +102,6 @@ export default class GeneratorIonic2 extends Base {
   }
   
   createTemplate(file=undefined, options = undefined){
-    
     if (!file){
       return false;
     }
@@ -110,12 +113,14 @@ export default class GeneratorIonic2 extends Base {
   }
   
   install() {
+    let done = this.async();
     return new Promise((resolve, reject) => {
       let i = 0;
       this.log(`☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕`);
       let process = this.spawnCommand('npm', ['install']);
       process.on('close', (code, signal) => {
         resolve(code);
+        done();
       });
     });
   }

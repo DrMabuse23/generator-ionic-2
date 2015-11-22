@@ -59,7 +59,12 @@ var GeneratorIonic2 = (function (_Base) {
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
     this.options = {
       name: 'test-app',
-      id: 'com.ionic2.gen.nice'
+      id: 'com.ionic2.gen.nice',
+      version: '0.0.1',
+      description: 'My Ionic 2 App',
+      email: 'example@example.com',
+      url: 'https://github.com/DrMabuse23/generator-ionic-2',
+      author: 'DrMabuse'
     };
     this.answers = null;
     this.platforms = ['ios', 'android'];
@@ -164,12 +169,14 @@ var GeneratorIonic2 = (function (_Base) {
     value: function install() {
       var _this4 = this;
 
+      var done = this.async();
       return new Promise(function (resolve, reject) {
         var i = 0;
         _this4.log('☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕');
         var process = _this4.spawnCommand('npm', ['install']);
         process.on('close', function (code, signal) {
           resolve(code);
+          done();
         });
       });
     }

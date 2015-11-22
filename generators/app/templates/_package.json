@@ -1,27 +1,39 @@
 {
-  "name": "<%= name %>",
-  "description": "<%= description %>",
-  "version": "<%= version %>",
-  "author": {
-    "name" : "<%= author %>", 
-    "email" : "<%= email %>", 
-    "url" : "<%= url %>"
+  "name": "ionic-conference-app",
+  "description": "Ionic Conference App",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/driftyco/ionic-conference-app.git"
+  },
+  "scripts": {
+    "build": "npm run webpack --colors --display-error-details",
+    "webpack": "webpack",
+    "watch": "webpack --watch",
+    "server": "webpack-dev-server --content-base app/ --inline --colors --display-error-details --port 3000",
+    "docs": "typedoc  --options typedoc.json  app/**/*.js",
+    "start": "npm run server"
+  },
+  "dependencies": {
+    "ionic-framework": "2.0.0-alpha.35",
+    "livereload-js": "^2.2.2",
+    "moment": "^2.10.6"
   },
   "devDependencies": {
-    "cordova": "5.4.0",
     "autoprefixer-loader": "^3.1.0",
     "awesome-typescript-loader": "0.12.0-rc.2",
     "css-loader": "^0.22.0",
     "file-loader": "^0.8.4",
     "node-sass": "^3.4.2",
-    "resolve-url-loader": "^1.4.2",
     "sass-loader": "^3.1.1",
     "style-loader": "^0.13.0",
     "typescript": "1.5.3",
     "url-loader": "^0.5.6",
-    "webpack": "^1.12.4"
+    "webpack": "^1.12.4",
+    "webpack-dev-server": "^1.12.1"
   },
-  "dependencies": {
-    "ionic-framework": "2.0.0-alpha.31"
-  }
+  "cordovaPlugins": [
+    "cordova-plugin-whitelist"
+  ],
+  "cordovaPlatforms": []
 }
