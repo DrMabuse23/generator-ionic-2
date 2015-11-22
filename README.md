@@ -5,7 +5,8 @@ a Generator to generate a mobile Hybrid Application with Ionic 2
 ## Installation
 
 First, install [Yeoman](http://yeoman.io) and generator-ionic-2 using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
-![yo](http://yeoman.io/static/yeoman-005.caffeeaba0.png =255)
+<img height="155" src="http://yeoman.io/static/yeoman-005.caffeeaba0.png" title="yeoman"/>
+<img src="https://camo.githubusercontent.com/ebc085019011ababb0d35024824304831c7dc72a/68747470733a2f2f7765627061636b2e6769746875622e696f2f6173736574732f6c6f676f2e706e67" alt="webpack" data-canonical-src="https://webpack.github.io/assets/logo.png" style="max-height:155px;">
 
 ```bash
 npm install -g yo
