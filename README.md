@@ -10,9 +10,7 @@ First, install [Yeoman](http://yeoman.io) and generator-ionic-2 using [npm](http
 <img src="https://camo.githubusercontent.com/ebc085019011ababb0d35024824304831c7dc72a/68747470733a2f2f7765627061636b2e6769746875622e696f2f6173736574732f6c6f676f2e706e67" alt="webpack" data-canonical-src="https://webpack.github.io/assets/logo.png" style="max-height:155px;">
 </div>
 ```bash
-npm install -g yo
-npm install -g generator-ionic-2
-
+npm i -g webpack yo generator-ionic-2
 ```
 
 Then generate your new project:
