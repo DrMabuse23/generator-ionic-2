@@ -13,7 +13,9 @@
     "server": "webpack-dev-server --content-base app/ --colors --display-error-details --port 3000",
     "docs": "typedoc  --options typedoc.json  app/**/*.js",
     "start": "npm run server",
-    "build": "gulp build && NODE_ENV=production webpack -p --config webpack.production.config.js"
+    "cordova": "node ./scripts/cordova.js --command",
+    "build": "gulp build && NODE_ENV=production webpack -p --config webpack.production.config.js --colors --json --progress --display-chunks --display-reasons --display-error-details --display-modules",
+    "bundle": "npm run build && npm run cordova --command build ios && npm run cordova --command run ios --device"
   },
   "dependencies": {
     "ionic-framework": "2.0.0-alpha.35",
@@ -33,11 +35,13 @@
     "typescript": "1.5.3",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.4",
-    "webpack-dev-server": "^1.12.1"
+    "webpack-dev-server": "^1.12.1",
+    "chalk": "^1.1.1",
+    "cordova-lib": "^5.4.0"
   },
   "cordovaPlugins": [
     "cordova-plugin-whitelist",
     "cordova-plugin-device"
   ],
-  "cordovaPlatforms": []
+  "cordovaPlatforms": ["ios"]
 }

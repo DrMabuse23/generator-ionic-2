@@ -51,7 +51,7 @@ export default class GeneratorIonic2 extends Base {
         cordova.cordova.platform('add', platform, {save: true});
       });
       var all = [];
-      ['.gitignore', 'app', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
+      ['.gitignore', 'app','scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
         all.push(this._copy(file));  
       });
       Promise.all(all).then(() => {
@@ -95,6 +95,11 @@ export default class GeneratorIonic2 extends Base {
   _copy(file=undefined) {
     if (!file) {
       return false;
+    }
+    if (file === 'scripts'){
+      return this.fs.copy(this.templatePath(`${file}`), this.destinationPath(file), (err) => {
+        throw Error(err);
+      });  
     }
     return this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) => {
       throw Error(err);

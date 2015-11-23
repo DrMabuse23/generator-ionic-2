@@ -95,7 +95,7 @@ var GeneratorIonic2 = (function (_Base) {
           _cordovaLib2['default'].cordova.platform('add', platform, { save: true });
         });
         var all = [];
-        ['.gitignore', 'app', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach(function (file) {
+        ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach(function (file) {
           all.push(_this._copy(file));
         });
         Promise.all(all).then(function () {
@@ -148,6 +148,11 @@ var GeneratorIonic2 = (function (_Base) {
 
       if (!file) {
         return false;
+      }
+      if (file === 'scripts') {
+        return this.fs.copy(this.templatePath('' + file), this.destinationPath(file), function (err) {
+          throw Error(err);
+        });
       }
       return this.fs.copy(this.templatePath('_' + file), this.destinationPath(file), function (err) {
         throw Error(err);

@@ -21,13 +21,13 @@ module.exports = {
         test: /\.js$/,
         loader: "awesome-typescript-loader?doTypeCheck=false&useWebpackText=true",
         include: [path.join(__dirname, 'app')],
-        exclude: /node_modules/
+        exclude: [path.join(__dirname, 'node_modules'), path.join(__dirname, 'scripts')]
       },
       {
         test: /\.ts$/,
         loader: "awesome-typescript-loader",
         include: [path.join(__dirname, 'app')],
-        exclude: /node_modules/
+        exclude: [path.join(__dirname, 'node_modules'), path.join(__dirname, 'scripts')]
       },
       { test: /\.jpe?g$|\.gif$|\.png$|\.html$/i, loader: "file-loader" },
       {
