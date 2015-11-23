@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import _ from 'lodash';
 import cordova from 'cordova-lib';
 import Validate from './../utils/Validate';
+import Plugins from './../utils/Plugins';
 
 /**
  * Base Generator class
@@ -14,6 +15,7 @@ export default class GeneratorIonic2 extends Base {
   
   constructor(...args){
     super(...args);
+    let plug = new Plugins();
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
     this.options = {
       name: 'test-app',
@@ -32,6 +34,7 @@ export default class GeneratorIonic2 extends Base {
     if (os.platform !== 'darwin') {
       this.platforms.push('windows');
     }
+    this.plugins = plug.getPlugins();
     this.genPrompts = [];
   }
   
@@ -48,16 +51,32 @@ export default class GeneratorIonic2 extends Base {
         this.createTemplate(file, this.answers);  
       });
       this.answers.platforms.forEach((platform) => {
-        cordova.cordova.platform('add', platform, {save: true});
+        
+        cordova.cordova.platform('add', platform, {save: true}, () => {
+          var all = [];
+          this.answers.plugins.forEach((plugin) => {
+            all.push(new Promise((resolve, reject) => {
+              cordova.cordova.plugin('add', plugin, {save: true}, (err) => {
+                if (err) {
+                  reject(err);
+                }
+                resolve();
+              });
+            }));
+          });
+          Promise.all(all).then(() => {
+            ['.gitignore', 'app','scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
+              this._copy(file);  
+            });
+            done();
+          });    
+        });
       });
-      var all = [];
-      ['.gitignore', 'app','scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
-        all.push(this._copy(file));  
-      });
-      Promise.all(all).then(() => {
-        console.log('templates are written');
-        done();
-      });
+        
+      
+      
+      
+      
     });
   }
   
@@ -90,6 +109,15 @@ export default class GeneratorIonic2 extends Base {
       message: 'Please choose a Platform',
       choices: this.platforms
     });
+    
+    this.genPrompts.push(
+      {
+      type: 'checkbox',
+      name: 'plugins',
+      message: 'Please choose your Plugins',
+      choices: this.plugins
+    }
+    );
   }
   
   _copy(file=undefined) {

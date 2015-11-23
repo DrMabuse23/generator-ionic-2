@@ -40,6 +40,10 @@ var _utilsValidate = require('./../utils/Validate');
 
 var _utilsValidate2 = _interopRequireDefault(_utilsValidate);
 
+var _utilsPlugins = require('./../utils/Plugins');
+
+var _utilsPlugins2 = _interopRequireDefault(_utilsPlugins);
+
 /**
  * Base Generator class
  */
@@ -56,6 +60,7 @@ var GeneratorIonic2 = (function (_Base) {
     }
 
     _get(Object.getPrototypeOf(GeneratorIonic2.prototype), 'constructor', this).apply(this, args);
+    var plug = new _utilsPlugins2['default']();
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
     this.options = {
       name: 'test-app',
@@ -71,6 +76,7 @@ var GeneratorIonic2 = (function (_Base) {
     if (_os2['default'].platform !== 'darwin') {
       this.platforms.push('windows');
     }
+    this.plugins = plug.getPlugins();
     this.genPrompts = [];
   }
 
@@ -92,15 +98,26 @@ var GeneratorIonic2 = (function (_Base) {
           _this.createTemplate(file, _this.answers);
         });
         _this.answers.platforms.forEach(function (platform) {
-          _cordovaLib2['default'].cordova.platform('add', platform, { save: true });
-        });
-        var all = [];
-        ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach(function (file) {
-          all.push(_this._copy(file));
-        });
-        Promise.all(all).then(function () {
-          console.log('templates are written');
-          done();
+
+          _cordovaLib2['default'].cordova.platform('add', platform, { save: true }, function () {
+            var all = [];
+            _this.answers.plugins.forEach(function (plugin) {
+              all.push(new Promise(function (resolve, reject) {
+                _cordovaLib2['default'].cordova.plugin('add', plugin, { save: true }, function (err) {
+                  if (err) {
+                    reject(err);
+                  }
+                  resolve();
+                });
+              }));
+            });
+            Promise.all(all).then(function () {
+              ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach(function (file) {
+                _this._copy(file);
+              });
+              done();
+            });
+          });
         });
       });
     }
@@ -139,6 +156,13 @@ var GeneratorIonic2 = (function (_Base) {
         name: 'platforms',
         message: 'Please choose a Platform',
         choices: this.platforms
+      });
+
+      this.genPrompts.push({
+        type: 'checkbox',
+        name: 'plugins',
+        message: 'Please choose your Plugins',
+        choices: this.plugins
       });
     }
   }, {
