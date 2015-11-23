@@ -24,7 +24,17 @@ open now [http://localhost:3000](http://localhost:3000)
 
 //or prod
 ```bash
-npm build
+npm run build
+```
+//cordova commands
+```bash
+npm run cordova --command platform add ios|android
+npm run cordova --command build ios|android
+npm run cordova --command run ios|android
+```
+//or bundle
+```bash
+npm run bundle
 ```
 
 ## Getting To Know Yeoman
