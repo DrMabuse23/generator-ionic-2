@@ -1,7 +1,7 @@
 {
   "name": "generator-ionic-2",
   "version": "0.0.9-alpha",
-  "description": "a Generator to generate a mobile Hybrid Application with Ionic/Angular 2",
+  "description": "a Generator to generate a mobile Hybrid Application with Ionic-2/Angular 2",
   "homepage": "",
   "author": {
     "name": "DrMabuse",
@@ -21,15 +21,16 @@
     "webpack",
     "typescript"
   ],
-  "engines" : { 
-    "node" : " >=0.12",
-    "npm": ">2.0.0" 
+  "engines": {
+    "node": " >=0.12",
+    "npm": ">2.0.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.2.0",
     "chalk": "^1.0.0",
     "cordova-lib": "^5.4.0",
     "lodash": "^3.10.1",
+    "tar": "^2.2.1",
     "yeoman-generator": "^0.21.1",
     "yeoman-welcome": "^1.0.1",
     "yosay": "^1.0.2"
