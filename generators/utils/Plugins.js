@@ -30,13 +30,30 @@ var PluginsBook = (function () {
     this.plugins = _lodash2['default'].dropRight(this.plugins, this.plugins.length - 10);
   }
 
+  // var a = new PluginsBook();
+  // var p = a.getPlugins();
+  // .then((res) => {
+  //   //console.log('res', res);
+  //   var a = res[0].results;
+  //   var b = res[1].results;
+  //   var all = _.sortBy(_.assign(a, b), 'modified');
+  //   console.log(all.length);
+  //   all = _.filter(all, (plugin) => {
+  //     if (plugin.name[0].match('cordova-plugin')) {
+  //       return true;
+  //     }
+  //     return false;
+  //   });
+  //   all = _.dropRight(all, all.length-30);
+  //   console.log(all, all.length);
+  // }).catch(e => console.log(e));
+
   _createClass(PluginsBook, [{
     key: 'getPlugins',
     value: function getPlugins() {
       //console.log(this.plugins);
       var names = [];
       (0, _lodash2['default'])(this.plugins).forEach(function (plugin) {
-        console.log(plugin);
         names.push(plugin.name[0]);
       }).value();
       return names;
@@ -54,23 +71,4 @@ var PluginsBook = (function () {
 })();
 
 exports['default'] = PluginsBook;
-
-var a = new PluginsBook();
-var p = a.getPlugins();
-console.log(p);
-// .then((res) => {
-//   //console.log('res', res);
-//   var a = res[0].results;
-//   var b = res[1].results;
-//   var all = _.sortBy(_.assign(a, b), 'modified');
-//   console.log(all.length);
-//   all = _.filter(all, (plugin) => {
-//     if (plugin.name[0].match('cordova-plugin')) {
-//       return true;
-//     }
-//     return false;
-//   });
-//   all = _.dropRight(all, all.length-30);
-//   console.log(all, all.length);
-// }).catch(e => console.log(e));
 module.exports = exports['default'];

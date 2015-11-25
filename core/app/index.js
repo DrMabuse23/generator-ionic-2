@@ -4,16 +4,16 @@ import { Base } from 'yeoman-generator';
 import welcome from 'yeoman-welcome';
 import chalk from 'chalk';
 import _ from 'lodash';
+import fs from 'fs';
 import cordova from 'cordova-lib';
 import Validate from './../utils/Validate';
 import Plugins from './../utils/Plugins';
 
 /**
- * Base Generator class
+ * Base Generator class to creat a empty project
  */
 export default class GeneratorIonic2 extends Base {
-  
-  constructor(...args){
+  constructor(...args) {
     super(...args);
     let plug = new Plugins();
     this.pkg = require(this.sourceRoot() + '/../../../package.json');
@@ -37,105 +37,63 @@ export default class GeneratorIonic2 extends Base {
     this.plugins = plug.getPlugins();
     this.genPrompts = [];
   }
-  
-  init(){
-    this.getStartPrompts()
-    this.log(welcome);
-    this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name)}! v. ${chalk.red(this.pkg.version)}`);
-  }
-  
-  writing(){
-    let done = this.async();
-    cordova.cordova.create('.', this.answers.id, this.answers.name, this.answers.name, (err, res) => {
-      ['package.json'].forEach((file) => {
-        this.createTemplate(file, this.answers);  
-      });
-      this.answers.platforms.forEach((platform) => {
-        
-        cordova.cordova.platform('add', platform, {save: true}, () => {
-          var all = [];
-          this.answers.plugins.forEach((plugin) => {
-            all.push(new Promise((resolve, reject) => {
-              cordova.cordova.plugin('add', plugin, {save: true}, (err) => {
-                if (err) {
-                  reject(err);
-                }
-                resolve();
-              });
-            }));
-          });
-          Promise.all(all).then(() => {
-            ['.gitignore', 'app','scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
-              this._copy(file);  
-            });
-            done();
-          });    
-        });
-      });
-        
-      
-      
-      
-      
-    });
-  }
-  
-  prompting() {
-    let done = this.async();
-    this.prompt(this.genPrompts, (answers) => {
-      this.answers = answers;
-      done();
-    });
-  }
+  /**
+   * create the basic prompts for the empty app creation
+   * @return {Array} []
+   */
   getStartPrompts() {
     var keys = Object.keys(this.options);
-    
+
     keys.forEach((option, key) => {
       this.genPrompts.push(
-      {
-        type: 'input',
-        name: option,
-        message: `Enter a ${option} for your app:`,
-        default: this.options[option]
-      });
+        {
+          type: 'input',
+          name: option,
+          message: `Enter a ${option} for your app:`,
+          default: this.options[option]
+        });
       if (typeof Validate[option] === 'function') {
         this.genPrompts[key].validate = Validate[option];
       }
     });
-    
+
     this.genPrompts.push({
       type: 'checkbox',
       name: 'platforms',
       message: 'Please choose a Platform',
       choices: this.platforms
     });
-    
+
     this.genPrompts.push(
       {
-      type: 'checkbox',
-      name: 'plugins',
-      message: 'Please choose your Plugins',
-      choices: this.plugins
-    }
-    );
+        type: 'checkbox',
+        name: 'plugins',
+        message: 'Please choose your Plugins',
+        choices: this.plugins
+      }
+      );
   }
-  
-  _copy(file=undefined) {
+  /**
+   * copy some files from root to destination
+   */
+  _copy(file = undefined) {
     if (!file) {
       return false;
     }
-    if (file === 'scripts'){
+    if (file === 'scripts') {
       return this.fs.copy(this.templatePath(`${file}`), this.destinationPath(file), (err) => {
         throw Error(err);
-      });  
+      });
     }
     return this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) => {
       throw Error(err);
     });
   }
-  
-  createTemplate(file=undefined, options = undefined){
-    if (!file){
+  /**
+   * create som templates with the params
+   */
+  createTemplate(file = undefined, options = undefined) {
+    if (!file) {
       return false;
     }
     return this.fs.copyTpl(
@@ -144,7 +102,102 @@ export default class GeneratorIonic2 extends Base {
       options
     );
   }
-  
+  /**
+   * yeoman use this like a constructor
+   */
+  init() {
+    this.fileCount = fs.readdirSync('.').length;
+    
+    // // abort when directory is not empty on first run
+    if (this.fileCount > 0) {
+      this.log(chalk.red('Non-empty directory. Cordova needs an empty directory to set up project'));
+      process.exit(1);
+    }
+    // console.log('cordova', cordova);  
+    this.getStartPrompts()
+    this.log(welcome);
+    this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name) }! v. ${chalk.red(this.pkg.version) }`);
+
+  }
+  /**
+   * question prompting
+   */
+  prompting() {
+    let done = this.async();
+    this.prompt(this.genPrompts, (answers) => {
+      this.answers = answers;
+      done();
+    });
+  }
+  /**
+   * create a cordova project into the destination folder
+   */
+  _initCordovaProject() {
+    console.log('init');
+    return cordova.cordova.raw.create('.', this.answers.id, this.answers.name, this.answers.name)
+      .then(() => {
+        return true;
+      })
+      .catch((err) => {
+        console.log(err);
+        process.exit();
+      });
+  }
+  /**
+   * add one or many platforms to the destination
+   */
+  _addPlatforms() {
+    return cordova.cordova.raw.platform('add', this.answers.platforms, { save: true }).then(() => {
+      console.log(`add platforms ${this.answers.platforms}`);
+      return true;
+    })
+      .catch((err) => {
+        console.log(err);
+        process.exit();
+      });
+  }
+  /**
+   * add one or more Plugins to the destination
+   */
+  _addPlugins() {
+    return cordova.cordova.raw.plugin('add', this.answers.plugins, { save: true })
+      .then(() => {
+        console.log(`add plugins ${this.answers.plugins}`);
+        return true;
+      })
+      .catch((err) => {
+        console.log(err);
+        process.exit();
+      });
+  }
+  /**
+   * copy the ionic2angular stuff starter template
+   */
+  _createIonicApp() {
+    ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
+      this._copy(file);
+    });
+    ['package.json'].forEach((file) => {
+      this.createTemplate(file, this.answers);
+    });
+  }
+  /**
+   * promise the writing process
+   */
+  writing() {
+    let done = this.async();
+    this._initCordovaProject().then(() => {
+      this._addPlatforms().then(() => {
+        this._addPlugins().then(() => {
+          this._createIonicApp();
+          done();
+        });
+      });
+    });
+  }
+  /**
+   * npm install after create the app
+   */
   install() {
     let done = this.async();
     return new Promise((resolve, reject) => {
@@ -155,6 +208,6 @@ export default class GeneratorIonic2 extends Base {
         resolve(code);
         done();
       });
-    });
+    })
   }
 }

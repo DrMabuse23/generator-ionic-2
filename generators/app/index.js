@@ -32,6 +32,10 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 var _cordovaLib = require('cordova-lib');
 
 var _cordovaLib2 = _interopRequireDefault(_cordovaLib);
@@ -81,73 +85,21 @@ var GeneratorIonic2 = (function (_Base) {
   }
 
   _createClass(GeneratorIonic2, [{
-    key: 'init',
-    value: function init() {
-      this.getStartPrompts();
-      this.log(_yeomanWelcome2['default']);
-      this.log('Welcome to ' + _chalk2['default'].yellow.bold(this.pkg.name) + '! v. ' + _chalk2['default'].red(this.pkg.version));
-    }
-  }, {
-    key: 'writing',
-    value: function writing() {
-      var _this = this;
-
-      var done = this.async();
-      _cordovaLib2['default'].cordova.create('.', this.answers.id, this.answers.name, this.answers.name, function (err, res) {
-        ['package.json'].forEach(function (file) {
-          _this.createTemplate(file, _this.answers);
-        });
-        _this.answers.platforms.forEach(function (platform) {
-
-          _cordovaLib2['default'].cordova.platform('add', platform, { save: true }, function () {
-            var all = [];
-            _this.answers.plugins.forEach(function (plugin) {
-              all.push(new Promise(function (resolve, reject) {
-                _cordovaLib2['default'].cordova.plugin('add', plugin, { save: true }, function (err) {
-                  if (err) {
-                    reject(err);
-                  }
-                  resolve();
-                });
-              }));
-            });
-            Promise.all(all).then(function () {
-              ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach(function (file) {
-                _this._copy(file);
-              });
-              done();
-            });
-          });
-        });
-      });
-    }
-  }, {
-    key: 'prompting',
-    value: function prompting() {
-      var _this2 = this;
-
-      var done = this.async();
-      this.prompt(this.genPrompts, function (answers) {
-        _this2.answers = answers;
-        done();
-      });
-    }
-  }, {
     key: 'getStartPrompts',
     value: function getStartPrompts() {
-      var _this3 = this;
+      var _this = this;
 
       var keys = Object.keys(this.options);
 
       keys.forEach(function (option, key) {
-        _this3.genPrompts.push({
+        _this.genPrompts.push({
           type: 'input',
           name: option,
           message: 'Enter a ' + option + ' for your app:',
-          'default': _this3.options[option]
+          'default': _this.options[option]
         });
         if (typeof _utilsValidate2['default'][option] === 'function') {
-          _this3.genPrompts[key].validate = _utilsValidate2['default'][option];
+          _this.genPrompts[key].validate = _utilsValidate2['default'][option];
         }
       });
 
@@ -194,15 +146,105 @@ var GeneratorIonic2 = (function (_Base) {
       return this.fs.copyTpl(this.templatePath('_' + file), this.destinationPath(file), options);
     }
   }, {
+    key: 'init',
+    value: function init() {
+      this.fileCount = _fs2['default'].readdirSync('.').length;
+
+      // // abort when directory is not empty on first run
+      if (this.fileCount > 0) {
+        this.log(_chalk2['default'].red('Non-empty directory. Cordova needs an empty directory to set up project'));
+        process.exit(1);
+      }
+      // console.log('cordova', cordova); 
+      this.getStartPrompts();
+      this.log(_yeomanWelcome2['default']);
+      this.log('Welcome to ' + _chalk2['default'].yellow.bold(this.pkg.name) + '! v. ' + _chalk2['default'].red(this.pkg.version));
+    }
+  }, {
+    key: 'prompting',
+    value: function prompting() {
+      var _this2 = this;
+
+      var done = this.async();
+      this.prompt(this.genPrompts, function (answers) {
+        _this2.answers = answers;
+        done();
+      });
+    }
+  }, {
+    key: '_initCordovaProject',
+    value: function _initCordovaProject() {
+      console.log('init');
+      return _cordovaLib2['default'].cordova.raw.create('.', this.answers.id, this.answers.name, this.answers.name).then(function () {
+        return true;
+      })['catch'](function (err) {
+        console.log(err);
+        process.exit();
+      });
+    }
+  }, {
+    key: '_addPlatforms',
+    value: function _addPlatforms() {
+      var _this3 = this;
+
+      return _cordovaLib2['default'].cordova.raw.platform('add', this.answers.platforms, { save: true }).then(function () {
+        console.log('add platforms ' + _this3.answers.platforms);
+        return true;
+      })['catch'](function (err) {
+        console.log(err);
+        process.exit();
+      });
+    }
+  }, {
+    key: '_addPlugins',
+    value: function _addPlugins() {
+      var _this4 = this;
+
+      return _cordovaLib2['default'].cordova.raw.plugin('add', this.answers.plugins, { save: true }).then(function () {
+        console.log('add plugins ' + _this4.answers.plugins);
+        return true;
+      })['catch'](function (err) {
+        console.log(err);
+        process.exit();
+      });
+    }
+  }, {
+    key: '_createIonicApp',
+    value: function _createIonicApp() {
+      var _this5 = this;
+
+      ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach(function (file) {
+        _this5._copy(file);
+      });
+      ['package.json'].forEach(function (file) {
+        _this5.createTemplate(file, _this5.answers);
+      });
+    }
+  }, {
+    key: 'writing',
+    value: function writing() {
+      var _this6 = this;
+
+      var done = this.async();
+      this._initCordovaProject().then(function () {
+        _this6._addPlatforms().then(function () {
+          _this6._addPlugins().then(function () {
+            _this6._createIonicApp();
+            done();
+          });
+        });
+      });
+    }
+  }, {
     key: 'install',
     value: function install() {
-      var _this4 = this;
+      var _this7 = this;
 
       var done = this.async();
       return new Promise(function (resolve, reject) {
         var i = 0;
-        _this4.log('☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕');
-        var process = _this4.spawnCommand('npm', ['install']);
+        _this7.log('☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕');
+        var process = _this7.spawnCommand('npm', ['install']);
         process.on('close', function (code, signal) {
           resolve(code);
           done();

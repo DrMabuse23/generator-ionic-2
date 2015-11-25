@@ -14,7 +14,6 @@ export default class PluginsBook {
     //console.log(this.plugins);
     let names = [];
     _(this.plugins).forEach((plugin) => {
-      console.log(plugin)
       names.push(plugin.name[0]);
     }).value();
     return names;
@@ -28,9 +27,8 @@ export default class PluginsBook {
   // }
 }
 
-var a = new PluginsBook();
-var p = a.getPlugins();
-console.log(p);
+// var a = new PluginsBook();
+// var p = a.getPlugins();
 // .then((res) => {
 //   //console.log('res', res);
 //   var a = res[0].results;

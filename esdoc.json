@@ -1,0 +1,5 @@
+{
+  "source": "./core",
+  "destination": "./docs",
+  "access": ["public", "protected", "private"]
+}
