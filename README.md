@@ -9,8 +9,11 @@ First, install [Yeoman](http://yeoman.io) and generator-ionic-2 using [npm](http
 <img height="155" src="http://yeoman.io/static/yeoman-005.caffeeaba0.png" title="yeoman"/>
 <img src="https://camo.githubusercontent.com/ebc085019011ababb0d35024824304831c7dc72a/68747470733a2f2f7765627061636b2e6769746875622e696f2f6173736574732f6c6f676f2e706e67" alt="webpack" data-canonical-src="https://webpack.github.io/assets/logo.png" style="max-height:155px;">
 </div>
+
 ```bash
-npm i -g webpack yo generator-ionic-2
+npm i -g webpack 
+npm i -g yo 
+npm i -g generator-ionic-2
 ```
 
 Then generate your new project:
@@ -20,6 +23,7 @@ mkdir myProject && cd myProject
 yo ionic-2
 npm start
 ```
+
 open now [http://localhost:3000](http://localhost:3000)
 
 //or prod
@@ -31,6 +35,7 @@ npm run build
 npm run cordova --command platform add ios|android
 npm run cordova --command build ios|android
 npm run cordova --command run ios|android
+npm run cordova --command plugin add cordova-plugin-device
 ```
 //or bundle
 ```bash
