@@ -8,6 +8,8 @@ var istanbul = require('gulp-istanbul');
 var nsp = require('gulp-nsp');
 var plumber = require('gulp-plumber');
 var coveralls = require('gulp-coveralls');
+var ghPages = require('gulp-gh-pages');
+var esdoc = require("gulp-esdoc");
 
 gulp.task('static', function () {
   return gulp.src('**/*.js')
@@ -18,9 +20,21 @@ gulp.task('static', function () {
 });
 
 gulp.task('nsp', function (cb) {
-  nsp({package: path.resolve('package.json')}, cb);
+  //nsp({package: path.resolve('package.json')}, cb);
 });
 
+ 
+gulp.task('ghPages',['esdoc'], function() {
+  return gulp.src('./docs/**/*')
+    .pipe(ghPages());
+});
+
+gulp.task('esdoc', function() {
+  gulp.src("./core")
+  .pipe(esdoc(require('./esdoc.json')));  
+});
+
+  
 gulp.task('pre-test', function () {
   return gulp.src('generators/**/*.js')
     .pipe(istanbul({
