@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">core/app/index.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/DrMabuse23/generator-ionic-2.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">app</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/app/index.js~GeneratorIonic2.html">GeneratorIonic2</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">app/templates/scripts</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/app/templates/scripts/cordova.es6~CordovaCommands.html">CordovaCommands</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/utils/Plugins.js~PluginsBook.html">PluginsBook</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/utils/Validate.js~Validate.html">Validate</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">core/app/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">require(&quot;babel-polyfill&quot;);
+import os from &apos;os&apos;;
+import { Base } from &apos;yeoman-generator&apos;;
+import welcome from &apos;yeoman-welcome&apos;;
+import chalk from &apos;chalk&apos;;
+import _ from &apos;lodash&apos;;
+import fs from &apos;fs&apos;;
+import cordova from &apos;cordova-lib&apos;;
+import Validate from &apos;./../utils/Validate&apos;;
+import Plugins from &apos;./../utils/Plugins&apos;;
+
+/**
+ * Base Generator class to creat a empty project
+ */
+export default class GeneratorIonic2 extends Base {
+  constructor(...args) {
+    super(...args);
+    let plug = new Plugins();
+    this.pkg = require(this.sourceRoot() + &apos;/../../../package.json&apos;);
+    this.options = {
+      name: &apos;test-app&apos;,
+      id: &apos;com.ionic2.gen.nice&apos;,
+      version: &apos;0.0.1&apos;,
+      description: &apos;My Ionic 2 App&apos;,
+      email: &apos;example@example.com&apos;,
+      url: &apos;https://github.com/DrMabuse23/generator-ionic-2&apos;,
+      author: &apos;DrMabuse&apos;
+    };
+    this.answers = null;
+    this.platforms = [
+      &apos;ios&apos;,
+      &apos;android&apos;
+    ];
+    if (os.platform !== &apos;darwin&apos;) {
+      this.platforms.push(&apos;windows&apos;);
+    }
+    this.plugins = plug.getPlugins();
+    this.genPrompts = [];
+  }
+  /**
+   * create the basic prompts for the empty app creation
+   * @return {Array} []
+   */
+  getStartPrompts() {
+    var keys = Object.keys(this.options);
+
+    keys.forEach((option, key) =&gt; {
+      this.genPrompts.push(
+        {
+          type: &apos;input&apos;,
+          name: option,
+          message: `Enter a ${option} for your app:`,
+          default: this.options[option]
+        });
+      if (typeof Validate[option] === &apos;function&apos;) {
+        this.genPrompts[key].validate = Validate[option];
+      }
+    });
+
+    this.genPrompts.push({
+      type: &apos;checkbox&apos;,
+      name: &apos;platforms&apos;,
+      message: &apos;Please choose a Platform&apos;,
+      choices: this.platforms
+    });
+
+    this.genPrompts.push(
+      {
+        type: &apos;checkbox&apos;,
+        name: &apos;plugins&apos;,
+        message: &apos;Please choose your Plugins&apos;,
+        choices: this.plugins
+      }
+      );
+  }
+  /**
+   * copy some files from root to destination
+   */
+  _copy(file = undefined) {
+    if (!file) {
+      return false;
+    }
+    if (file === &apos;scripts&apos;) {
+      return this.fs.copy(this.templatePath(`${file}`), this.destinationPath(file), (err) =&gt; {
+        throw Error(err);
+      });
+    }
+    return this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) =&gt; {
+      throw Error(err);
+    });
+  }
+  /**
+   * create som templates with the params
+   */
+  createTemplate(file = undefined, options = undefined) {
+    if (!file) {
+      return false;
+    }
+    return this.fs.copyTpl(
+      this.templatePath(`_${file}`),
+      this.destinationPath(file),
+      options
+    );
+  }
+  /**
+   * yeoman use this like a constructor
+   */
+  init() {
+    this.fileCount = fs.readdirSync(&apos;.&apos;).length;
+    
+    // // abort when directory is not empty on first run
+    if (this.fileCount &gt; 0) {
+      this.log(chalk.red(&apos;Non-empty directory. Cordova needs an empty directory to set up project&apos;));
+      process.exit(1);
+    }
+    // console.log(&apos;cordova&apos;, cordova);  
+    this.getStartPrompts()
+    this.log(welcome);
+    this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name) }! v. ${chalk.red(this.pkg.version) }`);
+
+  }
+  /**
+   * question prompting
+   */
+  prompting() {
+    let done = this.async();
+    this.prompt(this.genPrompts, (answers) =&gt; {
+      this.answers = answers;
+      done();
+    });
+  }
+  /**
+   * create a cordova project into the destination folder
+   */
+  _initCordovaProject() {
+    console.log(&apos;init&apos;);
+    return cordova.cordova.raw.create(&apos;.&apos;, this.answers.id, this.answers.name, this.answers.name)
+      .then(() =&gt; {
+        return true;
+      })
+      .catch((err) =&gt; {
+        console.log(err);
+        process.exit();
+      });
+  }
+  /**
+   * add one or many platforms to the destination
+   */
+  _addPlatforms() {
+    return cordova.cordova.raw.platform(&apos;add&apos;, this.answers.platforms, { save: true }).then(() =&gt; {
+      console.log(`add platforms ${this.answers.platforms}`);
+      return true;
+    })
+      .catch((err) =&gt; {
+        console.log(err);
+        process.exit();
+      });
+  }
+  /**
+   * add one or more Plugins to the destination
+   */
+  _addPlugins() {
+    return cordova.cordova.raw.plugin(&apos;add&apos;, this.answers.plugins, { save: true })
+      .then(() =&gt; {
+        console.log(`add plugins ${this.answers.plugins}`);
+        return true;
+      })
+      .catch((err) =&gt; {
+        console.log(err);
+        process.exit();
+      });
+  }
+  /**
+   * copy the ionic2angular stuff starter template
+   */
+  _createIonicApp() {
+    [&apos;.gitignore&apos;, &apos;app&apos;, &apos;scripts&apos;, &apos;resources&apos;, &apos;tsconfig.json&apos;, &apos;gulpfile.js&apos;, &apos;webpack.config.js&apos;, &apos;webpack.production.config.js&apos;].forEach((file) =&gt; {
+      this._copy(file);
+    });
+    [&apos;package.json&apos;].forEach((file) =&gt; {
+      this.createTemplate(file, this.answers);
+    });
+  }
+  /**
+   * promise the writing process
+   */
+  writing() {
+    let done = this.async();
+    this._initCordovaProject().then(() =&gt; {
+      this._addPlatforms().then(() =&gt; {
+        this._addPlugins().then(() =&gt; {
+          this._createIonicApp();
+          done();
+        });
+      });
+    });
+  }
+  /**
+   * npm install after create the app
+   */
+  install() {
+    let done = this.async();
+    return new Promise((resolve, reject) =&gt; {
+      let i = 0;
+      this.log(`&#x2615;  &#x2615;  &#x2615;  &#x2615;  &#x2615;   Start npm install   &#x2615;  &#x2615;  &#x2615;  &#x2615;  &#x2615;`);
+      let process = this.spawnCommand(&apos;npm&apos;, [&apos;install&apos;]);
+      process.on(&apos;close&apos;, (code, signal) =&gt; {
+        resolve(code);
+        done();
+      });
+    })
+  }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.3)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

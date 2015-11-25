@@ -1,0 +1,1483 @@
+[
+  {
+    "__docId__": 0,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "core/app/index.js",
+    "memberof": null,
+    "longname": "core/app/index.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "require(\"babel-polyfill\");\nimport os from 'os';\nimport { Base } from 'yeoman-generator';\nimport welcome from 'yeoman-welcome';\nimport chalk from 'chalk';\nimport _ from 'lodash';\nimport fs from 'fs';\nimport cordova from 'cordova-lib';\nimport Validate from './../utils/Validate';\nimport Plugins from './../utils/Plugins';\n\n/**\n * Base Generator class to creat a empty project\n */\nexport default class GeneratorIonic2 extends Base {\n  constructor(...args) {\n    super(...args);\n    let plug = new Plugins();\n    this.pkg = require(this.sourceRoot() + '/../../../package.json');\n    this.options = {\n      name: 'test-app',\n      id: 'com.ionic2.gen.nice',\n      version: '0.0.1',\n      description: 'My Ionic 2 App',\n      email: 'example@example.com',\n      url: 'https://github.com/DrMabuse23/generator-ionic-2',\n      author: 'DrMabuse'\n    };\n    this.answers = null;\n    this.platforms = [\n      'ios',\n      'android'\n    ];\n    if (os.platform !== 'darwin') {\n      this.platforms.push('windows');\n    }\n    this.plugins = plug.getPlugins();\n    this.genPrompts = [];\n  }\n  /**\n   * create the basic prompts for the empty app creation\n   * @return {Array} []\n   */\n  getStartPrompts() {\n    var keys = Object.keys(this.options);\n\n    keys.forEach((option, key) => {\n      this.genPrompts.push(\n        {\n          type: 'input',\n          name: option,\n          message: `Enter a ${option} for your app:`,\n          default: this.options[option]\n        });\n      if (typeof Validate[option] === 'function') {\n        this.genPrompts[key].validate = Validate[option];\n      }\n    });\n\n    this.genPrompts.push({\n      type: 'checkbox',\n      name: 'platforms',\n      message: 'Please choose a Platform',\n      choices: this.platforms\n    });\n\n    this.genPrompts.push(\n      {\n        type: 'checkbox',\n        name: 'plugins',\n        message: 'Please choose your Plugins',\n        choices: this.plugins\n      }\n      );\n  }\n  /**\n   * copy some files from root to destination\n   */\n  _copy(file = undefined) {\n    if (!file) {\n      return false;\n    }\n    if (file === 'scripts') {\n      return this.fs.copy(this.templatePath(`${file}`), this.destinationPath(file), (err) => {\n        throw Error(err);\n      });\n    }\n    return this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) => {\n      throw Error(err);\n    });\n  }\n  /**\n   * create som templates with the params\n   */\n  createTemplate(file = undefined, options = undefined) {\n    if (!file) {\n      return false;\n    }\n    return this.fs.copyTpl(\n      this.templatePath(`_${file}`),\n      this.destinationPath(file),\n      options\n    );\n  }\n  /**\n   * yeoman use this like a constructor\n   */\n  init() {\n    this.fileCount = fs.readdirSync('.').length;\n    \n    // // abort when directory is not empty on first run\n    if (this.fileCount > 0) {\n      this.log(chalk.red('Non-empty directory. Cordova needs an empty directory to set up project'));\n      process.exit(1);\n    }\n    // console.log('cordova', cordova);  \n    this.getStartPrompts()\n    this.log(welcome);\n    this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name) }! v. ${chalk.red(this.pkg.version) }`);\n\n  }\n  /**\n   * question prompting\n   */\n  prompting() {\n    let done = this.async();\n    this.prompt(this.genPrompts, (answers) => {\n      this.answers = answers;\n      done();\n    });\n  }\n  /**\n   * create a cordova project into the destination folder\n   */\n  _initCordovaProject() {\n    console.log('init');\n    return cordova.cordova.raw.create('.', this.answers.id, this.answers.name, this.answers.name)\n      .then(() => {\n        return true;\n      })\n      .catch((err) => {\n        console.log(err);\n        process.exit();\n      });\n  }\n  /**\n   * add one or many platforms to the destination\n   */\n  _addPlatforms() {\n    return cordova.cordova.raw.platform('add', this.answers.platforms, { save: true }).then(() => {\n      console.log(`add platforms ${this.answers.platforms}`);\n      return true;\n    })\n      .catch((err) => {\n        console.log(err);\n        process.exit();\n      });\n  }\n  /**\n   * add one or more Plugins to the destination\n   */\n  _addPlugins() {\n    return cordova.cordova.raw.plugin('add', this.answers.plugins, { save: true })\n      .then(() => {\n        console.log(`add plugins ${this.answers.plugins}`);\n        return true;\n      })\n      .catch((err) => {\n        console.log(err);\n        process.exit();\n      });\n  }\n  /**\n   * copy the ionic2angular stuff starter template\n   */\n  _createIonicApp() {\n    ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {\n      this._copy(file);\n    });\n    ['package.json'].forEach((file) => {\n      this.createTemplate(file, this.answers);\n    });\n  }\n  /**\n   * promise the writing process\n   */\n  writing() {\n    let done = this.async();\n    this._initCordovaProject().then(() => {\n      this._addPlatforms().then(() => {\n        this._addPlugins().then(() => {\n          this._createIonicApp();\n          done();\n        });\n      });\n    });\n  }\n  /**\n   * npm install after create the app\n   */\n  install() {\n    let done = this.async();\n    return new Promise((resolve, reject) => {\n      let i = 0;\n      this.log(`☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕`);\n      let process = this.spawnCommand('npm', ['install']);\n      process.on('close', (code, signal) => {\n        resolve(code);\n        done();\n      });\n    })\n  }\n}"
+  },
+  {
+    "__docId__": 1,
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "GeneratorIonic2",
+    "memberof": "core/app/index.js",
+    "longname": "core/app/index.js~GeneratorIonic2",
+    "access": null,
+    "export": true,
+    "importPath": "generator-ionic-2/core/app/index.js",
+    "importStyle": "GeneratorIonic2",
+    "description": "Base Generator class to creat a empty project",
+    "lineNumber": 15,
+    "interface": false,
+    "extends": [
+      "yeoman-generator~Base"
+    ]
+  },
+  {
+    "__docId__": 2,
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 16,
+    "undocument": true,
+    "params": [
+      {
+        "name": "args",
+        "types": [
+          "...*"
+        ],
+        "spread": true
+      }
+    ],
+    "generator": false
+  },
+  {
+    "__docId__": 3,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "pkg",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#pkg",
+    "access": null,
+    "description": null,
+    "lineNumber": 19,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 4,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "options",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#options",
+    "access": null,
+    "description": null,
+    "lineNumber": 20,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 5,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "answers",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#answers",
+    "access": null,
+    "description": null,
+    "lineNumber": 29,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 6,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "platforms",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#platforms",
+    "access": null,
+    "description": null,
+    "lineNumber": 30,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 7,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "plugins",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#plugins",
+    "access": null,
+    "description": null,
+    "lineNumber": 37,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 8,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "genPrompts",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#genPrompts",
+    "access": null,
+    "description": null,
+    "lineNumber": 38,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 9,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "getStartPrompts",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#getStartPrompts",
+    "access": null,
+    "description": "create the basic prompts for the empty app creation",
+    "lineNumber": 44,
+    "params": [],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Array"
+      ],
+      "spread": false,
+      "description": "[]"
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 10,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "_copy",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#_copy",
+    "access": null,
+    "description": "copy some files from root to destination",
+    "lineNumber": 79,
+    "params": [
+      {
+        "name": "file",
+        "optional": true,
+        "types": [
+          "*"
+        ],
+        "defaultRaw": "undefined",
+        "defaultValue": "undefined"
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 11,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "createTemplate",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#createTemplate",
+    "access": null,
+    "description": "create som templates with the params",
+    "lineNumber": 95,
+    "params": [
+      {
+        "name": "file",
+        "optional": true,
+        "types": [
+          "*"
+        ],
+        "defaultRaw": "undefined",
+        "defaultValue": "undefined"
+      },
+      {
+        "name": "options",
+        "optional": true,
+        "types": [
+          "*"
+        ],
+        "defaultRaw": "undefined",
+        "defaultValue": "undefined"
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 12,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "init",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#init",
+    "access": null,
+    "description": "yeoman use this like a constructor",
+    "lineNumber": 108,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 13,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "fileCount",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#fileCount",
+    "access": null,
+    "description": null,
+    "lineNumber": 109,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 14,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "prompting",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#prompting",
+    "access": null,
+    "description": "question prompting",
+    "lineNumber": 125,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 15,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "answers",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#answers",
+    "access": null,
+    "description": null,
+    "lineNumber": 128,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 16,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "_initCordovaProject",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#_initCordovaProject",
+    "access": null,
+    "description": "create a cordova project into the destination folder",
+    "lineNumber": 135,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 17,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "_addPlatforms",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#_addPlatforms",
+    "access": null,
+    "description": "add one or many platforms to the destination",
+    "lineNumber": 149,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 18,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "_addPlugins",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#_addPlugins",
+    "access": null,
+    "description": "add one or more Plugins to the destination",
+    "lineNumber": 162,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 19,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "_createIonicApp",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#_createIonicApp",
+    "access": null,
+    "description": "copy the ionic2angular stuff starter template",
+    "lineNumber": 176,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 20,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "writing",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#writing",
+    "access": null,
+    "description": "promise the writing process",
+    "lineNumber": 187,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 21,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "install",
+    "memberof": "core/app/index.js~GeneratorIonic2",
+    "longname": "core/app/index.js~GeneratorIonic2#install",
+    "access": null,
+    "description": "npm install after create the app",
+    "lineNumber": 201,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 22,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "core/app/templates/scripts/cordova.es6",
+    "memberof": null,
+    "longname": "core/app/templates/scripts/cordova.es6",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "import cordova from 'cordova-lib';\nimport _ from 'lodash';\nimport chalk from 'chalk';\nexport default class CordovaCommands{\n  constructor(args){\n    this.args = args;\n    \n    if (typeof this[args[0]] !== 'function') {\n      throw Error (`method ${args[0]} not exist`);\n      process.exit();\n    }\n    this[args[0]]();\n  }\n  \n  platform(){\n    if (!this.args[1] && !this.args[2]) {\n      console.log('platform is needed to params like \"add ios\"');\n      return false;\n    }\n    cordova.cordova.platform(this.args[1], this.args[2], {save: true}, (err, res) => {\n      if (err) {\n        console.log(chalk.red(err.message));\n        process.exit();\n      }\n      console.log(`${chalk.green(this.args.toString())} is done`);\n    });\n  }\n  \n  plugin(){\n    cordova.cordova.plugin(this.args[1], this.args[2], {save: true}, (err, res) => {\n      if (err) {\n        console.log(chalk.red(err.message));\n        process.exit();\n      }\n      console.log(`${chalk.green(this.args.toString())} is done`);\n    });\n  }\n  build(){\n    cordova.cordova.build(this.args[1], (err, res) => {\n      if (err) {\n        console.log(chalk.red(err.message));\n        process.exit();\n      }\n      console.log(`${chalk.green(this.args.toString())} is done`);\n    });\n  }\n  prepare(){\n    cordova.cordova.prepare(this.args[1], (err, res) => {\n      if (err) {\n        console.log(chalk.red(err.message));\n        process.exit();\n      }\n      console.log(`${chalk.green(this.args.toString())} is done`);\n    });\n  }\n  run(){\n    cordova.cordova.run(this.args[1],{device: this.args[2] === '--device' ? true : false}, (err, res) => {\n      if (err) {\n        console.log(chalk.red(err.message));\n        process.exit();\n      }\n      console.log(`${chalk.green(this.args.toString())} is done`);\n    });\n  }\n}\n// console.log('process', process);\nvar c = new CordovaCommands(_.drop(process.argv, 3));\n"
+  },
+  {
+    "__docId__": 23,
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "CordovaCommands",
+    "memberof": "core/app/templates/scripts/cordova.es6",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "access": null,
+    "export": true,
+    "importPath": "generator-ionic-2/core/app/templates/scripts/cordova.es6",
+    "importStyle": "CordovaCommands",
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "interface": false
+  },
+  {
+    "__docId__": 24,
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "params": [
+      {
+        "name": "args",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "generator": false
+  },
+  {
+    "__docId__": 25,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "args",
+    "memberof": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands#args",
+    "access": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 26,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "platform",
+    "memberof": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands#platform",
+    "access": null,
+    "description": null,
+    "lineNumber": 15,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 27,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "plugin",
+    "memberof": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands#plugin",
+    "access": null,
+    "description": null,
+    "lineNumber": 29,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 28,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "build",
+    "memberof": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands#build",
+    "access": null,
+    "description": null,
+    "lineNumber": 38,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 29,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "prepare",
+    "memberof": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands#prepare",
+    "access": null,
+    "description": null,
+    "lineNumber": 47,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 30,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "run",
+    "memberof": "core/app/templates/scripts/cordova.es6~CordovaCommands",
+    "longname": "core/app/templates/scripts/cordova.es6~CordovaCommands#run",
+    "access": null,
+    "description": null,
+    "lineNumber": 56,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 31,
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "c",
+    "memberof": "core/app/templates/scripts/cordova.es6",
+    "longname": "core/app/templates/scripts/cordova.es6~c",
+    "access": null,
+    "export": false,
+    "importPath": "generator-ionic-2/core/app/templates/scripts/cordova.es6",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 67,
+    "undocument": true,
+    "type": {
+      "types": [
+        "core/app/templates/scripts/cordova.es6~CordovaCommands"
+      ]
+    }
+  },
+  {
+    "__docId__": 32,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "core/utils/Plugins.js",
+    "memberof": null,
+    "longname": "core/utils/Plugins.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "import _ from 'lodash';\nimport fetch from 'node-fetch';\n\nexport default class PluginsBook {\n  constructor() {\n    this.api = {\n      url: 'http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&q=keywords:%22ecosystem:cordova%22&sort=rating:desc&size=500&start=0',\n      url2: 'http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&q=keywords:%22ecosystem:cordova%22&sort=rating:desc&size=296&start=500'\n    };\n    this.plugins = require('./../../core/plugins.json');\n    this.plugins = _.dropRight(this.plugins, this.plugins.length-10);\n  }\n  getPlugins() {\n    //console.log(this.plugins);\n    let names = [];\n    _(this.plugins).forEach((plugin) => {\n      names.push(plugin.name[0]);\n    }).value();\n    return names;\n    \n  }\n  // fetchApi(start) {\n  //   return fetch(start)\n  //     .then(function (res) {\n  //       return res.json();\n  //     });\n  // }\n}\n\n// var a = new PluginsBook();\n// var p = a.getPlugins();\n// .then((res) => {\n//   //console.log('res', res);\n//   var a = res[0].results;\n//   var b = res[1].results;\n//   var all = _.sortBy(_.assign(a, b), 'modified');\n//   console.log(all.length);\n//   all = _.filter(all, (plugin) => {\n//     if (plugin.name[0].match('cordova-plugin')) {\n//       return true;\n//     }\n//     return false;\n//   });\n//   all = _.dropRight(all, all.length-30);\n//   console.log(all, all.length);\n// }).catch(e => console.log(e));"
+  },
+  {
+    "__docId__": 33,
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "PluginsBook",
+    "memberof": "core/utils/Plugins.js",
+    "longname": "core/utils/Plugins.js~PluginsBook",
+    "access": null,
+    "export": true,
+    "importPath": "generator-ionic-2/core/utils/Plugins.js",
+    "importStyle": "PluginsBook",
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "interface": false
+  },
+  {
+    "__docId__": 34,
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "core/utils/Plugins.js~PluginsBook",
+    "longname": "core/utils/Plugins.js~PluginsBook#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 35,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "api",
+    "memberof": "core/utils/Plugins.js~PluginsBook",
+    "longname": "core/utils/Plugins.js~PluginsBook#api",
+    "access": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 36,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "plugins",
+    "memberof": "core/utils/Plugins.js~PluginsBook",
+    "longname": "core/utils/Plugins.js~PluginsBook#plugins",
+    "access": null,
+    "description": null,
+    "lineNumber": 10,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 37,
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "plugins",
+    "memberof": "core/utils/Plugins.js~PluginsBook",
+    "longname": "core/utils/Plugins.js~PluginsBook#plugins",
+    "access": null,
+    "description": null,
+    "lineNumber": 11,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 38,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "getPlugins",
+    "memberof": "core/utils/Plugins.js~PluginsBook",
+    "longname": "core/utils/Plugins.js~PluginsBook#getPlugins",
+    "access": null,
+    "description": null,
+    "lineNumber": 13,
+    "undocument": true,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 39,
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "core/utils/Validate.js",
+    "memberof": null,
+    "longname": "core/utils/Validate.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 4,
+    "content": "/**\n * validate som rules\n */\nexport default class Validate{\n  static id(id) {\n   let pattern = /^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+[0-9a-z_]$/i;\n    return pattern.test(id) ? true : 'Please enter a valid bundle identifier! E.g. com.company.project'; \n  }\n}"
+  },
+  {
+    "__docId__": 40,
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "Validate",
+    "memberof": "core/utils/Validate.js",
+    "longname": "core/utils/Validate.js~Validate",
+    "access": null,
+    "export": true,
+    "importPath": "generator-ionic-2/core/utils/Validate.js",
+    "importStyle": "Validate",
+    "description": "validate som rules",
+    "lineNumber": 4,
+    "interface": false
+  },
+  {
+    "__docId__": 41,
+    "kind": "method",
+    "static": true,
+    "variation": null,
+    "name": "id",
+    "memberof": "core/utils/Validate.js~Validate",
+    "longname": "core/utils/Validate.js~Validate.id",
+    "access": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "params": [
+      {
+        "name": "id",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 43,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Infinity",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 44,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~NaN",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 45,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~undefined",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 46,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~null",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 47,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Object",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 48,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~object",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 49,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Function",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 50,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~function",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 51,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Boolean",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 52,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~boolean",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 53,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Symbol",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 54,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Error",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 55,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~EvalError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 56,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~InternalError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 57,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RangeError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 58,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 59,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 60,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~TypeError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 61,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~URIError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 62,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Number",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 63,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~number",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 64,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Date",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 65,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~String",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 66,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~string",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 67,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RegExp",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 68,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 69,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 70,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 71,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 72,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 73,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 74,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 75,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 76,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 77,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 78,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Map",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 79,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Set",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 80,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 81,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 82,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 83,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~DataView",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 84,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~JSON",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 85,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Promise",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 86,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Generator",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 87,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 88,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Reflect",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 89,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Proxy",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 91,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "CanvasRenderingContext2D",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 92,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DocumentFragment",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 93,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Element",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Element",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 94,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Event",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Event",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 95,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Node",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Node",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 96,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NodeList",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~NodeList",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 97,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "XMLHttpRequest",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 98,
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "AudioContext",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~AudioContext",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  }
+]

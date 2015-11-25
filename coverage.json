@@ -1,0 +1,53 @@
+{
+  "coverage": "37.14%",
+  "expectCount": 35,
+  "actualCount": 13,
+  "files": {
+    "core/app/templates/scripts/cordova.es6": {
+      "expectCount": 8,
+      "actualCount": 0,
+      "undocumentLines": [
+        4,
+        6,
+        38,
+        5,
+        15,
+        29,
+        47,
+        56
+      ]
+    },
+    "core/app/index.js": {
+      "expectCount": 20,
+      "actualCount": 12,
+      "undocumentLines": [
+        29,
+        16,
+        109,
+        38,
+        20,
+        19,
+        30,
+        37
+      ]
+    },
+    "core/utils/Plugins.js": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        4,
+        6,
+        5,
+        13,
+        10
+      ]
+    },
+    "core/utils/Validate.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        5
+      ]
+    }
+  }
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl">
+  <title data-ice="title">API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/DrMabuse23/generator-ionic-2.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">app</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/app/index.js~GeneratorIonic2.html">GeneratorIonic2</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">app/templates/scripts</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/app/templates/scripts/cordova.es6~CordovaCommands.html">CordovaCommands</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/utils/Plugins.js~PluginsBook.html">PluginsBook</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/core/utils/Validate.js~Validate.html">Validate</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="generator-ionic-2-npm-version-npm-image-npm-url-build-status-travis-image-travis-url-dependency-status-daviddm-image-daviddm-url-coverage-percentage-coveralls-image-coveralls-url-">generator-ionic-2 <a href="https://npmjs.org/package/generator-ionic-2"><img src="https://badge.fury.io/js/generator-ionic-2.svg" alt="NPM version"></a> <a href="https://travis-ci.org/DrMabuse23/generator-ionic-2"><img src="https://travis-ci.org/DrMabuse23/generator-ionic-2.svg?branch=master" alt="Build Status"></a> <a href="https://david-dm.org/DrMabuse23/generator-ionic-2"><img src="https://david-dm.org/DrMabuse23/generator-ionic-2.svg?theme=shields.io" alt="Dependency Status"></a> <a href="https://coveralls.io/r/DrMabuse23/generator-ionic-2"><img src="https://coveralls.io/repos/DrMabuse23/generator-ionic-2/badge.svg" alt="Coverage percentage"></a></h1>
+<p>a Generator to generate a mobile Hybrid Application with Ionic 2</p>
+<h2 id="installation">Installation</h2>
+<p>First, install <a href="http://yeoman.io">Yeoman</a> and generator-ionic-2 using <a href="https://www.npmjs.com/">npm</a> (we assume you have pre-installed <a href="https://nodejs.org/">node.js</a>).</p>
+<p><div>
+<img height="155" src="http://yeoman.io/static/yeoman-005.caffeeaba0.png" title="yeoman">
+<img src="https://camo.githubusercontent.com/ebc085019011ababb0d35024824304831c7dc72a/68747470733a2f2f7765627061636b2e6769746875622e696f2f6173736574732f6c6f676f2e706e67">
+</div>
+
+</p>
+<pre><code class="lang-bash"><code class="source-code prettyprint">npm i -g webpack 
+npm i -g yo 
+npm i -g generator-ionic-2</code>
+</code></pre>
+<p>Then generate your new project:</p>
+<pre><code class="lang-bash"><code class="source-code prettyprint">mkdir myProject &amp;&amp; cd myProject
+yo ionic-2
+npm start</code>
+</code></pre>
+<p>open now <a href="http://localhost:3000">http://localhost:3000</a></p>
+<p>//or prod</p>
+<pre><code class="lang-bash"><code class="source-code prettyprint">npm run build</code>
+</code></pre>
+<p>//cordova commands</p>
+<pre><code class="lang-bash"><code class="source-code prettyprint">npm run cordova --command platform add ios|android
+npm run cordova --command build ios|android
+npm run cordova --command run ios|android
+npm run cordova --command plugin add cordova-plugin-device</code>
+</code></pre>
+<p>//or bundle</p>
+<pre><code class="lang-bash"><code class="source-code prettyprint">npm run bundle</code>
+</code></pre>
+<h2 id="getting-to-know-yeoman">Getting To Know Yeoman</h2>
+<p>Yeoman has a heart of gold. He&apos;s a person with feelings and opinions, but he&apos;s very easy to work with. If you think he&apos;s too opinionated, he can be easily convinced. Feel free to <a href="http://yeoman.io/">learn more about him</a>.</p>
+<h2 id="license">License</h2>
+<p>MIT &#xA9; <a href="pascal-brewing.de">DrMabuse</a></p>
+<h1 id="generator-ionic-2">generator-ionic-2</h1>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.3)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
