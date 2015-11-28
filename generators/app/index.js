@@ -49,7 +49,7 @@ var _utilsPlugins = require('./../utils/Plugins');
 var _utilsPlugins2 = _interopRequireDefault(_utilsPlugins);
 
 /**
- * Base Generator class
+ * Base Generator class to creat a empty project
  */
 require("babel-polyfill");
 
@@ -84,6 +84,11 @@ var GeneratorIonic2 = (function (_Base) {
     this.genPrompts = [];
   }
 
+  /**
+   * create the basic prompts for the empty app creation
+   * @return {Array} []
+   */
+
   _createClass(GeneratorIonic2, [{
     key: 'getStartPrompts',
     value: function getStartPrompts() {
@@ -117,6 +122,10 @@ var GeneratorIonic2 = (function (_Base) {
         choices: this.plugins
       });
     }
+
+    /**
+     * copy some files from root to destination
+     */
   }, {
     key: '_copy',
     value: function _copy() {
@@ -134,6 +143,10 @@ var GeneratorIonic2 = (function (_Base) {
         throw Error(err);
       });
     }
+
+    /**
+     * create som templates with the params
+     */
   }, {
     key: 'createTemplate',
     value: function createTemplate() {
@@ -145,6 +158,10 @@ var GeneratorIonic2 = (function (_Base) {
       }
       return this.fs.copyTpl(this.templatePath('_' + file), this.destinationPath(file), options);
     }
+
+    /**
+     * yeoman use this like a constructor
+     */
   }, {
     key: 'init',
     value: function init() {
@@ -160,6 +177,10 @@ var GeneratorIonic2 = (function (_Base) {
       this.log(_yeomanWelcome2['default']);
       this.log('Welcome to ' + _chalk2['default'].yellow.bold(this.pkg.name) + '! v. ' + _chalk2['default'].red(this.pkg.version));
     }
+
+    /**
+     * question prompting
+     */
   }, {
     key: 'prompting',
     value: function prompting() {
@@ -171,6 +192,10 @@ var GeneratorIonic2 = (function (_Base) {
         done();
       });
     }
+
+    /**
+     * create a cordova project into the destination folder
+     */
   }, {
     key: '_initCordovaProject',
     value: function _initCordovaProject() {
@@ -182,6 +207,10 @@ var GeneratorIonic2 = (function (_Base) {
         process.exit();
       });
     }
+
+    /**
+     * add one or many platforms to the destination
+     */
   }, {
     key: '_addPlatforms',
     value: function _addPlatforms() {
@@ -195,6 +224,10 @@ var GeneratorIonic2 = (function (_Base) {
         process.exit();
       });
     }
+
+    /**
+     * add one or more Plugins to the destination
+     */
   }, {
     key: '_addPlugins',
     value: function _addPlugins() {
@@ -208,6 +241,10 @@ var GeneratorIonic2 = (function (_Base) {
         process.exit();
       });
     }
+
+    /**
+     * copy the ionic2angular stuff starter template
+     */
   }, {
     key: '_createIonicApp',
     value: function _createIonicApp() {
@@ -220,6 +257,10 @@ var GeneratorIonic2 = (function (_Base) {
         _this5.createTemplate(file, _this5.answers);
       });
     }
+
+    /**
+     * promise the writing process
+     */
   }, {
     key: 'writing',
     value: function writing() {
@@ -235,6 +276,10 @@ var GeneratorIonic2 = (function (_Base) {
         });
       });
     }
+
+    /**
+     * npm install after create the app
+     */
   }, {
     key: 'install',
     value: function install() {
