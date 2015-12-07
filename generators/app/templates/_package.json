@@ -3,22 +3,23 @@
   "description": "<%= description %>",
   "version": "<%= version %>",
   "author": {
-    "name" : "<%= author %>", 
-    "email" : "<%= email %>", 
+    "name" : "<%= author %>",
+    "email" : "<%= email %>",
     "url" : "<%= url %>"
   },
   "scripts": {
     "webpack": "webpack",
     "watch": "webpack --watch",
-    "server": "webpack-dev-server --content-base app/ --colors --display-error-details --port 3000",
+    "server": "webpack-dev-server --content-base app/ --colors --hot --inline --display-error-details --port 3000",
     "docs": "typedoc  --options typedoc.json  app/**/*.js",
     "start": "npm run server",
     "cordova": "node ./scripts/cordova.js --command",
     "build": "gulp build && NODE_ENV=production webpack -p --config webpack.production.config.js --colors --json --progress --display-chunks --display-reasons --display-error-details --display-modules",
-    "bundle": "npm run build && npm run cordova --command build ios && npm run cordova --command run ios --device"
+    "bundle": "npm run build && npm run cordova --command build ios && npm run cordova --command run ios --device",
+    "bundle-android": "npm run build && npm run cordova --command build android && npm run cordova --command run android"
   },
   "dependencies": {
-    "ionic-framework": "2.0.0-alpha.35",
+    "ionic-framework": "2.0.0-alpha.37",
     "livereload-js": "^2.2.2",
     "moment": "^2.10.6"
   },
@@ -32,6 +33,7 @@
     "node-sass": "^3.4.2",
     "sass-loader": "^3.1.1",
     "style-loader": "^0.13.0",
+    "resolve-url-loader": "^1.4.2",
     "typescript": "1.5.3",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.4",

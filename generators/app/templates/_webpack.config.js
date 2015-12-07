@@ -15,6 +15,7 @@ module.exports = {
     publicPath: 'js/',
     pathinfo: true // show module paths in the bundle, handy for debugging
   },
+  devtool: "source-map",
   module: {
     loaders: [
       {
@@ -35,7 +36,7 @@ module.exports = {
         // can work with, e.g.: url('../my-file.png') => url('/path/to/my-file.png')
         // https://github.com/bholloway/resolve-url-loader
         test: /\.scss$/,
-        loaders: ["style", "css?sourceMap", "autoprefixer?browsers=last 2 version", "sass?sourceMap"]
+        loaders: ["style", "css?sourceMap", "resolve-url", "autoprefixer?browsers=last 2 version", "sass?sourceMap"]
       },
       // Any png-image or woff-font below or equal to 100K will be converted
       // to inline base64 instead
