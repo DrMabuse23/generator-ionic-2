@@ -10,8 +10,8 @@ import Validate from './../utils/Validate';
 import Plugins from './../utils/Plugins';
 
 /**
- * Base Generator class to creat a empty project
- */
+* Base Generator class to create a empty project
+*/
 export default class GeneratorIonic2 extends Base {
   constructor(...args) {
     super(...args);
@@ -36,12 +36,17 @@ export default class GeneratorIonic2 extends Base {
     }
     this.plugins = plug.getPlugins();
     this.genPrompts = [];
+
+    // greet and shit
+    this._init();
+    this._getStartPrompts();
   }
   /**
-   * create the basic prompts for the empty app creation
-   * @return {Array} []
-   */
-  getStartPrompts() {
+  * create the basic prompts for the empty app creation
+  * @return {Array} []
+  */
+  _getStartPrompts() {
+
     var keys = Object.keys(this.options);
 
     keys.forEach((option, key) => {
@@ -71,11 +76,11 @@ export default class GeneratorIonic2 extends Base {
         message: 'Please choose your Plugins',
         choices: this.plugins
       }
-      );
+    );
   }
   /**
-   * copy some files from root to destination
-   */
+  * copy some files from root to destination
+  */
   _copy(file = undefined) {
     if (!file) {
       return false;
@@ -90,8 +95,8 @@ export default class GeneratorIonic2 extends Base {
     });
   }
   /**
-   * create som templates with the params
-   */
+  * create some templates with the params
+  */
   createTemplate(file = undefined, options = undefined) {
     if (!file) {
       return false;
@@ -103,25 +108,26 @@ export default class GeneratorIonic2 extends Base {
     );
   }
   /**
-   * yeoman use this like a constructor
-   */
-  init() {
+  * yeoman uses this like a constructor, but since this is getting
+  * transpiled from es6, it won't work as it should. we're calling
+  * it from constructor
+  */
+  _init() {
     this.fileCount = fs.readdirSync('.').length;
-    
-    // // abort when directory is not empty on first run
+
+    // abort when directory is not empty on first run
     if (this.fileCount > 0) {
       this.log(chalk.red('Non-empty directory. Cordova needs an empty directory to set up project'));
       process.exit(1);
     }
-    // console.log('cordova', cordova);  
-    this.getStartPrompts()
+
+    // console.log('cordova', cordova);
     this.log(welcome);
     this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name) }! v. ${chalk.red(this.pkg.version) }`);
-
   }
   /**
-   * question prompting
-   */
+  * question prompting
+  */
   prompting() {
     let done = this.async();
     this.prompt(this.genPrompts, (answers) => {
@@ -130,49 +136,51 @@ export default class GeneratorIonic2 extends Base {
     });
   }
   /**
-   * create a cordova project into the destination folder
-   */
+  * create a cordova project into the destination folder
+  */
   _initCordovaProject() {
-    console.log('init');
     return cordova.cordova.raw.create('.', this.answers.id, this.answers.name, this.answers.name)
-      .then(() => {
-        return true;
-      })
-      .catch((err) => {
-        console.log(err);
-        process.exit();
-      });
+    .then(() => {
+      return true;
+    })
+    .catch((err) => {
+      console.log(err.message);
+      // process.exit();
+      return err;
+    });
   }
   /**
-   * add one or many platforms to the destination
-   */
+  * add one or many platforms to the destination
+  */
   _addPlatforms() {
     return cordova.cordova.raw.platform('add', this.answers.platforms, { save: true }).then(() => {
       console.log(`add platforms ${this.answers.platforms}`);
       return true;
     })
-      .catch((err) => {
-        console.log(err);
-        process.exit();
-      });
+    .catch((err) => {
+      console.log(err.message);
+      // process.exit();
+      return err;
+    });
   }
   /**
-   * add one or more Plugins to the destination
-   */
+  * add one or more Plugins to the destination
+  */
   _addPlugins() {
     return cordova.cordova.raw.plugin('add', this.answers.plugins, { save: true })
-      .then(() => {
-        console.log(`add plugins ${this.answers.plugins}`);
-        return true;
-      })
-      .catch((err) => {
-        console.log(err);
-        process.exit();
-      });
+    .then(() => {
+      console.log(`add plugins ${this.answers.plugins}`);
+      return true;
+    })
+    .catch((err) => {
+      console.log(err.message);
+      // process.exit();
+      return err;
+    });
   }
   /**
-   * copy the ionic2angular stuff starter template
-   */
+  * copy the ionic2angular stuff starter template
+  */
   _createIonicApp() {
     ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {
       this._copy(file);
@@ -182,22 +190,25 @@ export default class GeneratorIonic2 extends Base {
     });
   }
   /**
-   * promise the writing process
-   */
+  * promise the writing process
+  */
   writing() {
     let done = this.async();
     this._initCordovaProject().then(() => {
       this._addPlatforms().then(() => {
-        this._addPlugins().then(() => {
-          this._createIonicApp();
-          done();
-        });
+        this._addPlugins();
       });
+    })
+    // no matter what we've picked by cordova selections (or if we
+    // picked no platforms or plugins, we'll continue execution)
+    .finally(() => {
+      this._createIonicApp();
+      done();
     });
   }
   /**
-   * npm install after create the app
-   */
+  * npm install after create the app
+  */
   install() {
     let done = this.async();
     return new Promise((resolve, reject) => {
