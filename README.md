@@ -40,6 +40,7 @@ npm run cordova --command plugin add cordova-plugin-device
 //or bundle
 ```bash
 npm run bundle
+npm run bundle-android
 ```
 
 [API](https://drmabuse23.github.io/generator-ionic-2/index.html)
