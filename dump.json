@@ -10,7 +10,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "require(\"babel-polyfill\");\nimport os from 'os';\nimport { Base } from 'yeoman-generator';\nimport welcome from 'yeoman-welcome';\nimport chalk from 'chalk';\nimport _ from 'lodash';\nimport fs from 'fs';\nimport cordova from 'cordova-lib';\nimport Validate from './../utils/Validate';\nimport Plugins from './../utils/Plugins';\n\n/**\n * Base Generator class to creat a empty project\n */\nexport default class GeneratorIonic2 extends Base {\n  constructor(...args) {\n    super(...args);\n    let plug = new Plugins();\n    this.pkg = require(this.sourceRoot() + '/../../../package.json');\n    this.options = {\n      name: 'test-app',\n      id: 'com.ionic2.gen.nice',\n      version: '0.0.1',\n      description: 'My Ionic 2 App',\n      email: 'example@example.com',\n      url: 'https://github.com/DrMabuse23/generator-ionic-2',\n      author: 'DrMabuse'\n    };\n    this.answers = null;\n    this.platforms = [\n      'ios',\n      'android'\n    ];\n    if (os.platform !== 'darwin') {\n      this.platforms.push('windows');\n    }\n    this.plugins = plug.getPlugins();\n    this.genPrompts = [];\n  }\n  /**\n   * create the basic prompts for the empty app creation\n   * @return {Array} []\n   */\n  getStartPrompts() {\n    var keys = Object.keys(this.options);\n\n    keys.forEach((option, key) => {\n      this.genPrompts.push(\n        {\n          type: 'input',\n          name: option,\n          message: `Enter a ${option} for your app:`,\n          default: this.options[option]\n        });\n      if (typeof Validate[option] === 'function') {\n        this.genPrompts[key].validate = Validate[option];\n      }\n    });\n\n    this.genPrompts.push({\n      type: 'checkbox',\n      name: 'platforms',\n      message: 'Please choose a Platform',\n      choices: this.platforms\n    });\n\n    this.genPrompts.push(\n      {\n        type: 'checkbox',\n        name: 'plugins',\n        message: 'Please choose your Plugins',\n        choices: this.plugins\n      }\n      );\n  }\n  /**\n   * copy some files from root to destination\n   */\n  _copy(file = undefined) {\n    if (!file) {\n      return false;\n    }\n    if (file === 'scripts') {\n      return this.fs.copy(this.templatePath(`${file}`), this.destinationPath(file), (err) => {\n        throw Error(err);\n      });\n    }\n    return this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) => {\n      throw Error(err);\n    });\n  }\n  /**\n   * create som templates with the params\n   */\n  createTemplate(file = undefined, options = undefined) {\n    if (!file) {\n      return false;\n    }\n    return this.fs.copyTpl(\n      this.templatePath(`_${file}`),\n      this.destinationPath(file),\n      options\n    );\n  }\n  /**\n   * yeoman use this like a constructor\n   */\n  init() {\n    this.fileCount = fs.readdirSync('.').length;\n    \n    // // abort when directory is not empty on first run\n    if (this.fileCount > 0) {\n      this.log(chalk.red('Non-empty directory. Cordova needs an empty directory to set up project'));\n      process.exit(1);\n    }\n    // console.log('cordova', cordova);  \n    this.getStartPrompts()\n    this.log(welcome);\n    this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name) }! v. ${chalk.red(this.pkg.version) }`);\n\n  }\n  /**\n   * question prompting\n   */\n  prompting() {\n    let done = this.async();\n    this.prompt(this.genPrompts, (answers) => {\n      this.answers = answers;\n      done();\n    });\n  }\n  /**\n   * create a cordova project into the destination folder\n   */\n  _initCordovaProject() {\n    console.log('init');\n    return cordova.cordova.raw.create('.', this.answers.id, this.answers.name, this.answers.name)\n      .then(() => {\n        return true;\n      })\n      .catch((err) => {\n        console.log(err);\n        process.exit();\n      });\n  }\n  /**\n   * add one or many platforms to the destination\n   */\n  _addPlatforms() {\n    return cordova.cordova.raw.platform('add', this.answers.platforms, { save: true }).then(() => {\n      console.log(`add platforms ${this.answers.platforms}`);\n      return true;\n    })\n      .catch((err) => {\n        console.log(err);\n        process.exit();\n      });\n  }\n  /**\n   * add one or more Plugins to the destination\n   */\n  _addPlugins() {\n    return cordova.cordova.raw.plugin('add', this.answers.plugins, { save: true })\n      .then(() => {\n        console.log(`add plugins ${this.answers.plugins}`);\n        return true;\n      })\n      .catch((err) => {\n        console.log(err);\n        process.exit();\n      });\n  }\n  /**\n   * copy the ionic2angular stuff starter template\n   */\n  _createIonicApp() {\n    ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {\n      this._copy(file);\n    });\n    ['package.json'].forEach((file) => {\n      this.createTemplate(file, this.answers);\n    });\n  }\n  /**\n   * promise the writing process\n   */\n  writing() {\n    let done = this.async();\n    this._initCordovaProject().then(() => {\n      this._addPlatforms().then(() => {\n        this._addPlugins().then(() => {\n          this._createIonicApp();\n          done();\n        });\n      });\n    });\n  }\n  /**\n   * npm install after create the app\n   */\n  install() {\n    let done = this.async();\n    return new Promise((resolve, reject) => {\n      let i = 0;\n      this.log(`☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕`);\n      let process = this.spawnCommand('npm', ['install']);\n      process.on('close', (code, signal) => {\n        resolve(code);\n        done();\n      });\n    })\n  }\n}"
+    "content": "require(\"babel-polyfill\");\nimport os from 'os';\nimport { Base } from 'yeoman-generator';\nimport welcome from 'yeoman-welcome';\nimport chalk from 'chalk';\nimport _ from 'lodash';\nimport fs from 'fs';\nimport cordova from 'cordova-lib';\nimport Validate from './../utils/Validate';\nimport Plugins from './../utils/Plugins';\n\n/**\n* Base Generator class to create a empty project\n*/\nexport default class GeneratorIonic2 extends Base {\n  constructor(...args) {\n    super(...args);\n    let plug = new Plugins();\n    this.pkg = require(this.sourceRoot() + '/../../../package.json');\n    this.options = {\n      name: 'test-app',\n      id: 'com.ionic2.gen.nice',\n      version: '0.0.1',\n      description: 'My Ionic 2 App',\n      email: 'example@example.com',\n      url: 'https://github.com/DrMabuse23/generator-ionic-2',\n      author: 'DrMabuse'\n    };\n    this.answers = null;\n    this.platforms = [\n      'ios',\n      'android'\n    ];\n    if (os.platform !== 'darwin') {\n      this.platforms.push('windows');\n    }\n    this.plugins = plug.getPlugins();\n    this.genPrompts = [];\n\n    // greet and shit\n    this._init();\n    this._getStartPrompts();\n  }\n  /**\n  * create the basic prompts for the empty app creation\n  * @return {Array} []\n  */\n  _getStartPrompts() {\n\n    var keys = Object.keys(this.options);\n\n    keys.forEach((option, key) => {\n      this.genPrompts.push(\n        {\n          type: 'input',\n          name: option,\n          message: `Enter a ${option} for your app:`,\n          default: this.options[option]\n        });\n      if (typeof Validate[option] === 'function') {\n        this.genPrompts[key].validate = Validate[option];\n      }\n    });\n\n    this.genPrompts.push({\n      type: 'checkbox',\n      name: 'platforms',\n      message: 'Please choose a Platform',\n      choices: this.platforms\n    });\n\n    this.genPrompts.push(\n      {\n        type: 'checkbox',\n        name: 'plugins',\n        message: 'Please choose your Plugins',\n        choices: this.plugins\n      }\n    );\n  }\n  /**\n  * copy some files from root to destination\n  */\n  _copy(file = undefined) {\n    if (!file) {\n      return false;\n    }\n    if (file === 'scripts') {\n      return this.fs.copy(this.templatePath(`${file}`), this.destinationPath(file), (err) => {\n        throw Error(err);\n      });\n    }\n    return this.fs.copy(this.templatePath(`_${file}`), this.destinationPath(file), (err) => {\n      throw Error(err);\n    });\n  }\n  /**\n  * create some templates with the params\n  */\n  createTemplate(file = undefined, options = undefined) {\n    if (!file) {\n      return false;\n    }\n    return this.fs.copyTpl(\n      this.templatePath(`_${file}`),\n      this.destinationPath(file),\n      options\n    );\n  }\n  /**\n  * yeoman uses this like a constructor, but since this is getting\n  * transpiled from es6, it won't work as it should. we're calling\n  * it from constructor\n  */\n  _init() {\n    this.fileCount = fs.readdirSync('.').length;\n\n    // abort when directory is not empty on first run\n    if (this.fileCount > 0) {\n      this.log(chalk.red('Non-empty directory. Cordova needs an empty directory to set up project'));\n      process.exit(1);\n    }\n\n    // console.log('cordova', cordova);\n    this.log(welcome);\n    this.log(`Welcome to ${chalk.yellow.bold(this.pkg.name) }! v. ${chalk.red(this.pkg.version) }`);\n  }\n  /**\n  * question prompting\n  */\n  prompting() {\n    let done = this.async();\n    this.prompt(this.genPrompts, (answers) => {\n      this.answers = answers;\n      done();\n    });\n  }\n  /**\n  * create a cordova project into the destination folder\n  */\n  _initCordovaProject() {\n    return cordova.cordova.raw.create('.', this.answers.id, this.answers.name, this.answers.name)\n    .then(() => {\n      return true;\n    })\n    .catch((err) => {\n      console.log(err.message);\n      // process.exit();\n      return err;\n    });\n  }\n  /**\n  * add one or many platforms to the destination\n  */\n  _addPlatforms() {\n    return cordova.cordova.raw.platform('add', this.answers.platforms, { save: true }).then(() => {\n      console.log(`add platforms ${this.answers.platforms}`);\n      return true;\n    })\n    .catch((err) => {\n      console.log(err.message);\n      // process.exit();\n      return err;\n    });\n  }\n  /**\n  * add one or more Plugins to the destination\n  */\n  _addPlugins() {\n    return cordova.cordova.raw.plugin('add', this.answers.plugins, { save: true })\n    .then(() => {\n      console.log(`add plugins ${this.answers.plugins}`);\n      return true;\n    })\n    .catch((err) => {\n      console.log(err.message);\n      // process.exit();\n      return err;\n    });\n  }\n  /**\n  * copy the ionic2angular stuff starter template\n  */\n  _createIonicApp() {\n    ['.gitignore', 'app', 'scripts', 'resources', 'tsconfig.json', 'gulpfile.js', 'webpack.config.js', 'webpack.production.config.js'].forEach((file) => {\n      this._copy(file);\n    });\n    ['package.json'].forEach((file) => {\n      this.createTemplate(file, this.answers);\n    });\n  }\n  /**\n  * promise the writing process\n  */\n  writing() {\n    let done = this.async();\n    this._initCordovaProject().then(() => {\n      this._addPlatforms().then(() => {\n        this._addPlugins();\n      });\n    })\n    // no matter what we've picked by cordova selections (or if we\n    // picked no platforms or plugins, we'll continue execution)\n    .finally(() => {\n      this._createIonicApp();\n      done();\n    });\n  }\n  /**\n  * npm install after create the app\n  */\n  install() {\n    let done = this.async();\n    return new Promise((resolve, reject) => {\n      let i = 0;\n      this.log(`☕  ☕  ☕  ☕  ☕   Start npm install   ☕  ☕  ☕  ☕  ☕`);\n      let process = this.spawnCommand('npm', ['install']);\n      process.on('close', (code, signal) => {\n        resolve(code);\n        done();\n      });\n    })\n  }\n}"
   },
   {
     "__docId__": 1,
@@ -24,7 +24,7 @@
     "export": true,
     "importPath": "generator-ionic-2/core/app/index.js",
     "importStyle": "GeneratorIonic2",
-    "description": "Base Generator class to creat a empty project",
+    "description": "Base Generator class to create a empty project",
     "lineNumber": 15,
     "interface": false,
     "extends": [
@@ -167,12 +167,12 @@
     "kind": "method",
     "static": false,
     "variation": null,
-    "name": "getStartPrompts",
+    "name": "_getStartPrompts",
     "memberof": "core/app/index.js~GeneratorIonic2",
-    "longname": "core/app/index.js~GeneratorIonic2#getStartPrompts",
+    "longname": "core/app/index.js~GeneratorIonic2#_getStartPrompts",
     "access": null,
     "description": "create the basic prompts for the empty app creation",
-    "lineNumber": 44,
+    "lineNumber": 48,
     "params": [],
     "return": {
       "nullable": null,
@@ -194,7 +194,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#_copy",
     "access": null,
     "description": "copy some files from root to destination",
-    "lineNumber": 79,
+    "lineNumber": 84,
     "params": [
       {
         "name": "file",
@@ -222,8 +222,8 @@
     "memberof": "core/app/index.js~GeneratorIonic2",
     "longname": "core/app/index.js~GeneratorIonic2#createTemplate",
     "access": null,
-    "description": "create som templates with the params",
-    "lineNumber": 95,
+    "description": "create some templates with the params",
+    "lineNumber": 100,
     "params": [
       {
         "name": "file",
@@ -256,12 +256,12 @@
     "kind": "method",
     "static": false,
     "variation": null,
-    "name": "init",
+    "name": "_init",
     "memberof": "core/app/index.js~GeneratorIonic2",
-    "longname": "core/app/index.js~GeneratorIonic2#init",
+    "longname": "core/app/index.js~GeneratorIonic2#_init",
     "access": null,
-    "description": "yeoman use this like a constructor",
-    "lineNumber": 108,
+    "description": "yeoman uses this like a constructor, but since this is getting\ntranspiled from es6, it won't work as it should. we're calling\nit from constructor",
+    "lineNumber": 115,
     "params": [],
     "generator": false
   },
@@ -275,7 +275,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#fileCount",
     "access": null,
     "description": null,
-    "lineNumber": 109,
+    "lineNumber": 116,
     "undocument": true,
     "type": {
       "types": [
@@ -293,7 +293,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#prompting",
     "access": null,
     "description": "question prompting",
-    "lineNumber": 125,
+    "lineNumber": 131,
     "params": [],
     "generator": false
   },
@@ -307,7 +307,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#answers",
     "access": null,
     "description": null,
-    "lineNumber": 128,
+    "lineNumber": 134,
     "undocument": true,
     "type": {
       "types": [
@@ -325,7 +325,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#_initCordovaProject",
     "access": null,
     "description": "create a cordova project into the destination folder",
-    "lineNumber": 135,
+    "lineNumber": 141,
     "params": [],
     "return": {
       "types": [
@@ -344,7 +344,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#_addPlatforms",
     "access": null,
     "description": "add one or many platforms to the destination",
-    "lineNumber": 149,
+    "lineNumber": 155,
     "params": [],
     "return": {
       "types": [
@@ -363,7 +363,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#_addPlugins",
     "access": null,
     "description": "add one or more Plugins to the destination",
-    "lineNumber": 162,
+    "lineNumber": 169,
     "params": [],
     "return": {
       "types": [
@@ -382,7 +382,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#_createIonicApp",
     "access": null,
     "description": "copy the ionic2angular stuff starter template",
-    "lineNumber": 176,
+    "lineNumber": 184,
     "params": [],
     "generator": false
   },
@@ -396,7 +396,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#writing",
     "access": null,
     "description": "promise the writing process",
-    "lineNumber": 187,
+    "lineNumber": 195,
     "params": [],
     "generator": false
   },
@@ -410,7 +410,7 @@
     "longname": "core/app/index.js~GeneratorIonic2#install",
     "access": null,
     "description": "npm install after create the app",
-    "lineNumber": 201,
+    "lineNumber": 212,
     "params": [],
     "return": {
       "types": [
@@ -601,7 +601,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import _ from 'lodash';\nimport fetch from 'node-fetch';\n\nexport default class PluginsBook {\n  constructor() {\n    this.api = {\n      url: 'http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&q=keywords:%22ecosystem:cordova%22&sort=rating:desc&size=500&start=0',\n      url2: 'http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&q=keywords:%22ecosystem:cordova%22&sort=rating:desc&size=296&start=500'\n    };\n    this.plugins = require('./../../core/plugins.json');\n    this.plugins = _.dropRight(this.plugins, this.plugins.length-10);\n  }\n  getPlugins() {\n    //console.log(this.plugins);\n    let names = [];\n    _(this.plugins).forEach((plugin) => {\n      names.push(plugin.name[0]);\n    }).value();\n    return names;\n    \n  }\n  // fetchApi(start) {\n  //   return fetch(start)\n  //     .then(function (res) {\n  //       return res.json();\n  //     });\n  // }\n}\n\n// var a = new PluginsBook();\n// var p = a.getPlugins();\n// .then((res) => {\n//   //console.log('res', res);\n//   var a = res[0].results;\n//   var b = res[1].results;\n//   var all = _.sortBy(_.assign(a, b), 'modified');\n//   console.log(all.length);\n//   all = _.filter(all, (plugin) => {\n//     if (plugin.name[0].match('cordova-plugin')) {\n//       return true;\n//     }\n//     return false;\n//   });\n//   all = _.dropRight(all, all.length-30);\n//   console.log(all, all.length);\n// }).catch(e => console.log(e));"
+    "content": "import _ from 'lodash';\nimport fetch from 'node-fetch';\n\nexport default class PluginsBook {\n  constructor() {\n    this.api = {\n      url: 'http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&q=keywords:%22ecosystem:cordova%22&sort=rating:desc&size=500&start=0',\n      url2: 'http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&q=keywords:%22ecosystem:cordova%22&sort=rating:desc&size=296&start=500'\n    };\n    this.plugins = require(`${__dirname}/../plugins.json`);\n    this.plugins = _.dropRight(this.plugins, this.plugins.length-10);\n  }\n  getPlugins() {\n    //console.log(this.plugins);\n    let names = [];\n    _(this.plugins).forEach((plugin) => {\n      names.push(plugin.name[0]);\n    }).value();\n    return names;\n    \n  }\n  // fetchApi(start) {\n  //   return fetch(start)\n  //     .then(function (res) {\n  //       return res.json();\n  //     });\n  // }\n}\n\n// var a = new PluginsBook();\n// var p = a.getPlugins();\n// .then((res) => {\n//   //console.log('res', res);\n//   var a = res[0].results;\n//   var b = res[1].results;\n//   var all = _.sortBy(_.assign(a, b), 'modified');\n//   console.log(all.length);\n//   all = _.filter(all, (plugin) => {\n//     if (plugin.name[0].match('cordova-plugin')) {\n//       return true;\n//     }\n//     return false;\n//   });\n//   all = _.dropRight(all, all.length-30);\n//   console.log(all, all.length);\n// }).catch(e => console.log(e));"
   },
   {
     "__docId__": 33,

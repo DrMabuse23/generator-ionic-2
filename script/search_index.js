@@ -384,6 +384,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "core/app/index.js~generatorionic2#_getstartprompts",
+    "class/core/app/index.js~GeneratorIonic2.html#instance-method-_getStartPrompts",
+    "core/app/index.js~GeneratorIonic2#_getStartPrompts",
+    "method"
+  ],
+  [
+    "core/app/index.js~generatorionic2#_init",
+    "class/core/app/index.js~GeneratorIonic2.html#instance-method-_init",
+    "core/app/index.js~GeneratorIonic2#_init",
+    "method"
+  ],
+  [
     "core/app/index.js~generatorionic2#_initcordovaproject",
     "class/core/app/index.js~GeneratorIonic2.html#instance-method-_initCordovaProject",
     "core/app/index.js~GeneratorIonic2#_initCordovaProject",
@@ -418,18 +430,6 @@ window.esdocSearchIndex = [
     "class/core/app/index.js~GeneratorIonic2.html#instance-member-genPrompts",
     "core/app/index.js~GeneratorIonic2#genPrompts",
     "member"
-  ],
-  [
-    "core/app/index.js~generatorionic2#getstartprompts",
-    "class/core/app/index.js~GeneratorIonic2.html#instance-method-getStartPrompts",
-    "core/app/index.js~GeneratorIonic2#getStartPrompts",
-    "method"
-  ],
-  [
-    "core/app/index.js~generatorionic2#init",
-    "class/core/app/index.js~GeneratorIonic2.html#instance-method-init",
-    "core/app/index.js~GeneratorIonic2#init",
-    "method"
   ],
   [
     "core/app/index.js~generatorionic2#install",

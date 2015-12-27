@@ -50,7 +50,7 @@ export default class PluginsBook {
       url: &apos;http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&amp;q=keywords:%22ecosystem:cordova%22&amp;sort=rating:desc&amp;size=500&amp;start=0&apos;,
       url2: &apos;http://npmsearch.com/query?fields=name,author,modified,homepage,version,rating&amp;q=keywords:%22ecosystem:cordova%22&amp;sort=rating:desc&amp;size=296&amp;start=500&apos;
     };
-    this.plugins = require(&apos;./../../core/plugins.json&apos;);
+    this.plugins = require(`${__dirname}/../plugins.json`);
     this.plugins = _.dropRight(this.plugins, this.plugins.length-10);
   }
   getPlugins() {
