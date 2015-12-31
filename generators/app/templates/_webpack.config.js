@@ -6,7 +6,6 @@ module.exports = {
     'reflect-metadata',
     'web-animations.min',
     'zone.js',
-    "moment",
     path.join(__dirname, 'app', 'main', 'main.js')
   ],
   output: {
