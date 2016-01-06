@@ -12,25 +12,64 @@
 // Any Sass variables that you want to override need to be done
 // in this file, before Ionic's source scss files are imported.
 
-$colors: (
-  primary:    #387ef5,
-  secondary:  #32db64,
-  danger:     #f53d3d,
-  light:      #f4f4f4,
-  dark:       #222,
-  favorite:   #69BB7B
-);
+
 
 // override ionic.scss's font-path to point to the correct path
 // when building from Sass source.
 // More info: https://github.com/jtangelder/sass-loader#problems-with-url
-$font-path: '~ionic-framework/dist/fonts';
 
+$colors: (
+  primary:    #387ef5,
+  secondary:  #32db64,
+  danger:     #f53d3d,
+  light:      #ffffff,
+  dark:       #222,
+  favorite:   #69BB7B,
+  positive:   #006cb8,
+  light-gray: #F6F6F6,
+  citrus:     #FED006,
+  pink:       #E91E63,
+  pink-dark:  #880E4F,
+  pink-light: #F8BBD0,
+  blue:       #2196F3,
+  blue-light: #E3F2FD,
+  blue-dark:  #0D47A1,
+  indigo:     #3F51B5,
+  indigo-light: #E8EAF6,
+  indigo-dark: #1A237E,
+  lime:       #CDDC39,
+  lime-light: #F4FF81,
+  lime-400:   #C6FF00,
+  teal:       #009688,
+  teal-light: #E0F2F1,
+  teal-dark:  #004D40
+);
+$font-path: '~ionic-framework/fonts';
+$ionicons-font-path: $font-path;
 // Ionic Sass
 // ---------------------------------
-@import "ionic";
-
+@import "~ionic-framework/ionic.ios";
+//@import "~ionic-framework/ionic.md";
 
 // App Sass
 // ---------------------------------
 @import "../about/about", "../device/device";
+
+@each $color-name, $color-value in $colors {
+  .toolbar ion-title[#{$color-name}] .toolbar-title,
+  icon[#{$color-name}], icon.#{$color-name}{
+    color: $color-value;
+  }
+  ion-popup.#{$color-name} {
+    .popup-head{
+      .popup-title{
+        color: $color-value;
+      }
+    }
+    .popup-buttons{
+      .popup-button{
+        color: $color-value;
+      }
+    }
+  }
+}
