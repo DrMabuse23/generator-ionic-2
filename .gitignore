@@ -3,3 +3,4 @@ coverage
 .DS_STORE
 npm-debug.log
 docs
+.publish
