@@ -1,14 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var _cordovaLib = require('cordova-lib');
 
@@ -21,6 +17,10 @@ var _lodash2 = _interopRequireDefault(_lodash);
 var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var CordovaCommands = (function () {
   function CordovaCommands(args) {
@@ -35,8 +35,6 @@ var CordovaCommands = (function () {
     this[args[0]]();
   }
 
-  // console.log('process', process);
-
   _createClass(CordovaCommands, [{
     key: 'platform',
     value: function platform() {
@@ -46,12 +44,12 @@ var CordovaCommands = (function () {
         console.log('platform is needed to params like "add ios"');
         return false;
       }
-      _cordovaLib2['default'].cordova.platform(this.args[1], this.args[2], { save: true }, function (err, res) {
+      _cordovaLib2.default.cordova.platform(this.args[1], this.args[2], { save: true }, function (err, res) {
         if (err) {
-          console.log(_chalk2['default'].red(err.message));
+          console.log(_chalk2.default.red(err.message));
           process.exit();
         }
-        console.log(_chalk2['default'].green(_this.args.toString()) + ' is done');
+        console.log(_chalk2.default.green(_this.args.toString()) + ' is done');
       });
     }
   }, {
@@ -59,12 +57,12 @@ var CordovaCommands = (function () {
     value: function plugin() {
       var _this2 = this;
 
-      _cordovaLib2['default'].cordova.plugin(this.args[1], this.args[2], { save: true }, function (err, res) {
+      _cordovaLib2.default.cordova.plugin(this.args[1], this.args[2], { save: true }, function (err, res) {
         if (err) {
-          console.log(_chalk2['default'].red(err.message));
+          console.log(_chalk2.default.red(err.message));
           process.exit();
         }
-        console.log(_chalk2['default'].green(_this2.args.toString()) + ' is done');
+        console.log(_chalk2.default.green(_this2.args.toString()) + ' is done');
       });
     }
   }, {
@@ -72,12 +70,12 @@ var CordovaCommands = (function () {
     value: function build() {
       var _this3 = this;
 
-      _cordovaLib2['default'].cordova.build(this.args[1], function (err, res) {
+      _cordovaLib2.default.cordova.build(this.args[1], function (err, res) {
         if (err) {
-          console.log(_chalk2['default'].red(err.message));
+          console.log(_chalk2.default.red(err.message));
           process.exit();
         }
-        console.log(_chalk2['default'].green(_this3.args.toString()) + ' is done');
+        console.log(_chalk2.default.green(_this3.args.toString()) + ' is done');
       });
     }
   }, {
@@ -85,12 +83,12 @@ var CordovaCommands = (function () {
     value: function prepare() {
       var _this4 = this;
 
-      _cordovaLib2['default'].cordova.prepare(this.args[1], function (err, res) {
+      _cordovaLib2.default.cordova.prepare(this.args[1], function (err, res) {
         if (err) {
-          console.log(_chalk2['default'].red(err.message));
+          console.log(_chalk2.default.red(err.message));
           process.exit();
         }
-        console.log(_chalk2['default'].green(_this4.args.toString()) + ' is done');
+        console.log(_chalk2.default.green(_this4.args.toString()) + ' is done');
       });
     }
   }, {
@@ -98,19 +96,20 @@ var CordovaCommands = (function () {
     value: function run() {
       var _this5 = this;
 
-      _cordovaLib2['default'].cordova.run(this.args[1], { device: this.args[2] === '--device' ? true : false }, function (err, res) {
+      _cordovaLib2.default.cordova.run(this.args[1], { device: this.args[2] === '--device' ? true : false }, function (err, res) {
         if (err) {
-          console.log(_chalk2['default'].red(err.message));
+          console.log(_chalk2.default.red(err.message));
           process.exit();
         }
-        console.log(_chalk2['default'].green(_this5.args.toString()) + ' is done');
+        console.log(_chalk2.default.green(_this5.args.toString()) + ' is done');
       });
     }
   }]);
 
   return CordovaCommands;
 })();
+// console.log('process', process);
 
-exports['default'] = CordovaCommands;
-var c = new CordovaCommands(_lodash2['default'].drop(process.argv, 3));
+exports.default = CordovaCommands;
+var c = new CordovaCommands(_lodash2.default.drop(process.argv, 3));
 module.exports = exports['default'];
