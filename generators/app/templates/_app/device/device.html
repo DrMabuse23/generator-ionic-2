@@ -1,5 +1,5 @@
-<ion-navbar *navbar>
-  <ion-title>Device</ion-title>
+<ion-navbar *navbar pink>
+  <ion-title light>Device</ion-title>
 </ion-navbar>
 
 <ion-content>
@@ -16,7 +16,17 @@
          Platform:
        </span>
        <span class="col item-right">
-         {{deviceInfo.platform}}
+         {{deviceInfo?.platform}}
+       </span>
+     </span>
+    </ion-item>
+    <ion-item>
+     <span class="row">
+       <span class="col">
+         Tablet:
+       </span>
+       <span class="col item-right">
+         {{deviceInfo?.isTablet ? 'yes' : 'no'}}
        </span>
      </span>
     </ion-item>

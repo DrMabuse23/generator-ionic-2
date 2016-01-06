@@ -19,9 +19,19 @@
     "bundle-android": "npm run build && npm run cordova --command build android && npm run cordova --command run android"
   },
   "dependencies": {
-    "ionic-framework": "2.0.0-alpha.37",
-    "livereload-js": "^2.2.2",
-    "moment": "^2.10.6"
+    "angular2": "^2.0.0-beta.0",
+    "colors": "^1.1.2",
+    "es6-promise": "^3.0.2",
+    "es6-shim": "0.33.6",
+    "inquirer": "0.11.0",
+    "lodash": "3.10.1",
+    "q": "1.4.1",
+    "reflect-metadata": "0.1.2",
+    "rxjs": "5.0.0-beta.0",
+    "shelljs": "0.5.3",
+    "zone.js": "0.5.10",
+    "ionic-framework": "2.0.0-alpha.46",
+    "livereload-js": "^2.2.2"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.1.0",
